@@ -1,2 +1,3 @@
-# math-helper
-A repository of knowledge and quizzes for computer science related math
+# Math Helper
+
+A repository for sharing knowledge on Computer Science related math concepts, problems and quizzes to help practice.

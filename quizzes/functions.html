@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Discrete Math Functions Quiz</title>
+  <style>
+    :root {
+      --bg-color: #f4f7f9;
+      --font-color: #333;
+      --primary-color: #005a9c;
+      --light-gray: #dde;
+      --border-radius: 8px;
+      --correct-color: #28a745;
+      --incorrect-color: #dc3545;
+      --card-bg: #ffffff;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--font-color);
+      line-height: 1.6;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .container {
+      max-width: 800px;
+      width: 100%;
+    }
+
+    h1, h2 {
+      color: var(--primary-color);
+      border-bottom: 2px solid var(--light-gray);
+      padding-bottom: 10px;
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    section {
+      background-color: var(--card-bg);
+      padding: 20px;
+      margin-bottom: 20px;
+      border-radius: var(--border-radius);
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .question {
+      margin-bottom: 25px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--light-gray);
+    }
+
+    .question:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .question-text {
+      font-weight: bold;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .relation-details {
+      font-family: "SF Mono", "Consolas", "Menlo", monospace;
+      background-color: #eef2f5;
+      padding: 15px;
+      border-radius: 4px;
+      margin-bottom: 10px;
+      line-height: 1.8;
+    }
+
+    .radio-group label {
+      display: block;
+      margin-bottom: 5px;
+      cursor: pointer;
+    }
+
+    .result-indicator {
+      font-size: 1.5em;
+      font-weight: bold;
+    }
+
+    .correct { color: var(--correct-color); }
+    .incorrect { color: var(--incorrect-color); }
+
+    .info-box {
+      font-size: 0.9em;
+      background-color: #eef2f5;
+      padding: 15px;
+      border-radius: var(--border-radius);
+      margin-bottom: 20px;
+    }
+
+    .controls {
+      text-align: center;
+      padding: 20px;
+      background-color: var(--card-bg);
+      border-radius: var(--border-radius);
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    button {
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      padding: 12px 25px;
+      font-size: 1em;
+      border-radius: var(--border-radius);
+      cursor: pointer;
+      transition: background-color 0.2s;
+      margin: 0 10px;
+    }
+
+    button:hover {
+      background-color: #004170;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>Discrete Math Functions Quiz</h1>
+
+  <section id="relation-classification">
+    <h2>Part 1: Classifying Relations</h2>
+    <div class="info-box">
+      A relation <b>R</b> from set <b>A</b> to set <b>B</b> can be classified as:
+      <ul>
+        <li><b>Total Function:</b> Every element in A maps to <em>exactly one</em> element in B.</li>
+        <li><b>Partial Function (not Total):</b> At least one element in A maps to nothing, and every other element maps to <em>at most one</em> element in B.</li>
+        <li><b>Not a Function (Relation only):</b> At least one element in A maps to <em>more than one</em> element in B.</li>
+      </ul>
+    </div>
+    <div id="relation-classification-questions"></div>
+  </section>
+
+  <section id="function-properties">
+    <h2>Part 2: Properties of Functions</h2>
+    <div class="info-box">
+      A function <b>f</b> from set <b>A</b> (domain) to set <b>B</b> (codomain) can be:
+      <ul>
+        <li><b>Injective (One-to-One):</b> No two elements in A map to the same element in B.</li>
+        <li><b>Surjective (Onto):</b> Every element in B is mapped to by at least one element in A.</li>
+        <li><b>Bijective:</b> Both injective and surjective.</li>
+      </ul>
+    </div>
+    <div id="function-properties-questions"></div>
+  </section>
+
+  <div class="controls">
+    <button id="check-btn">Check Answers</button>
+    <button id="reset-btn">New Quiz</button>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+
+    // --- DOM ELEMENTS ---
+    const relationContainer = document.getElementById('relation-classification-questions');
+    const functionContainer = document.getElementById('function-properties-questions');
+    const checkBtn = document.getElementById('check-btn');
+    const resetBtn = document.getElementById('reset-btn');
+
+    // --- HELPER FUNCTIONS ---
+
+    /** Shuffles an array in place. */
+    const shuffleArray = (array) => {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    };
+
+    /** Generates a random integer between min and max (inclusive). */
+    const randInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+
+    /** Formats a set of numbers or letters for display. */
+    const formatSet = (arr) => `{${arr.join(', ')}}`;
+
+    /** Formats a relation (array of pairs) for display. */
+    const formatRelation = (pairs) => {
+      if (pairs.length === 0) return '{}';
+      return `{${pairs.map(p => `(${p[0]}, ${p[1]})`).join(', ')}}`;
+    };
+
+    // --- GENERATOR FUNCTIONS ---
+
+    // Part 1: Relation Generators
+    const generateRelation = (type) => {
+      const aSize = randInt(3, 4);
+      const bSize = randInt(3, 4);
+      const A = Array.from({ length: aSize }, (_, i) => i + 1);
+      const B = Array.from({ length: bSize }, (_, i) => String.fromCharCode(97 + i)); // a, b, c...
+      const R = [];
+      const mappedA = new Set();
+
+      switch (type) {
+        case 'Total Function':
+          A.forEach(a => {
+            R.push([a, B[randInt(0, bSize - 1)]]);
+          });
+          break;
+
+        case 'Partial Function (not Total)':
+          const elementsToMap = shuffleArray([...A]).slice(0, randInt(1, aSize - 1));
+          elementsToMap.forEach(a => {
+            R.push([a, B[randInt(0, bSize - 1)]]);
+          });
+          break;
+
+        case 'Not a Function (Relation only)':
+          // Start with a valid partial or total function
+          const baseSize = randInt(1, aSize);
+          const baseA = shuffleArray([...A]).slice(0, baseSize);
+          baseA.forEach(a => {
+            R.push([a, B[randInt(0, bSize - 1)]]);
+          });
+          // Add a one-to-many mapping
+          const aToFork = baseA[randInt(0, baseA.length - 1)];
+          const existingB = R.find(p => p[0] === aToFork)[1];
+          let newB;
+          do {
+            newB = B[randInt(0, bSize - 1)];
+          } while (bSize > 1 && newB === existingB);
+          if (bSize === 1) R.push([aToFork, existingB]); // Handle edge case |B|=1
+          else R.push([aToFork, newB]);
+          break;
+      }
+      return { A, B, R: shuffleArray(R) };
+    };
+
+    // Part 2: Function Property Generators
+    const generateFunction = (type) => {
+      let aSize, bSize;
+      let A, B, f = [];
+      const mapping = new Map();
+
+      switch (type) {
+        case 'Bijective':
+          aSize = bSize = randInt(3, 4);
+          A = Array.from({ length: aSize }, (_, i) => i + 1);
+          B = shuffleArray(Array.from({ length: bSize }, (_, i) => String.fromCharCode(97 + i)));
+          A.forEach((a, i) => f.push([a, B[i]]));
+          break;
+
+        case 'Injective only':
+          aSize = randInt(2, 3);
+          bSize = aSize + randInt(1, 2);
+          A = Array.from({ length: aSize }, (_, i) => i + 1);
+          B = shuffleArray(Array.from({ length: bSize }, (_, i) => String.fromCharCode(97 + i)));
+          A.forEach((a, i) => f.push([a, B[i]]));
+          break;
+
+        case 'Surjective only':
+          bSize = randInt(2, 3);
+          aSize = bSize + randInt(1, 2);
+          A = Array.from({ length: aSize }, (_, i) => i + 1);
+          B = Array.from({ length: bSize }, (_, i) => String.fromCharCode(97 + i));
+          // Ensure all of B is covered
+          B.forEach((b, i) => f.push([A[i], b]));
+          // Map remaining A elements
+          for (let i = bSize; i < aSize; i++) {
+            f.push([A[i], B[randInt(0, bSize - 1)]]);
+          }
+          break;
+
+        case 'Neither':
+          aSize = randInt(3, 4);
+          bSize = randInt(3, 4);
+          A = Array.from({ length: aSize }, (_, i) => i + 1);
+          B = Array.from({ length: bSize }, (_, i) => String.fromCharCode(97 + i));
+          const usedB = new Set();
+          A.forEach(a => {
+            const targetB = B[randInt(0, bSize - 1)];
+            f.push([a, targetB]);
+            usedB.add(targetB);
+          });
+          // Ensure it's not surjective (if it accidentally is)
+          if (usedB.size === bSize && aSize >= bSize) {
+            f[0][1] = f[1][1];
+          }
+          // Ensure it's not injective (if it accidentally is)
+          if (new Set(f.map(p => p[1])).size === aSize) {
+            f[0][1] = f[1][1];
+          }
+          break;
+      }
+      return { A, B, f: shuffleArray(f) };
+    };
+
+    // --- QUIZ GENERATION ---
+
+    function generateQuiz() {
+      relationContainer.innerHTML = '';
+      functionContainer.innerHTML = '';
+
+      // Part 1
+      const relationTypes = ['Total Function', 'Partial Function (not Total)', 'Not a Function (Relation only)'];
+      shuffleArray(relationTypes); // Add more types to ensure variety for 5 questions
+      const relationQuestions = [...relationTypes, relationTypes[randInt(0,2)], relationTypes[randInt(0,2)]];
+      shuffleArray(relationQuestions);
+
+      relationQuestions.forEach((type, i) => {
+        const { A, B, R } = generateRelation(type);
+        const questionDiv = document.createElement('div');
+        questionDiv.className = 'question';
+        questionDiv.dataset.answer = type;
+
+        questionDiv.innerHTML = `
+                <div class="question-text">
+                    <span>${i + 1}. Classify the following relation:</span>
+                    <span class="result-indicator"></span>
+                </div>
+                <div class="relation-details">
+                    A = ${formatSet(A)}<br>
+                    B = ${formatSet(B)}<br>
+                    R = ${formatRelation(R)}
+                </div>
+                <div class="radio-group">
+                    ${relationTypes.map(opt => `
+                        <label>
+                            <input type="radio" name="q1-${i}" value="${opt}"> ${opt}
+                        </label>
+                    `).join('')}
+                </div>
+            `;
+        relationContainer.appendChild(questionDiv);
+      });
+
+      // Part 2
+      const functionTypes = ['Bijective', 'Injective only', 'Surjective only', 'Neither'];
+      const functionQuestions = [...functionTypes, functionTypes[randInt(0,3)]];
+      shuffleArray(functionQuestions);
+
+      functionQuestions.forEach((type, i) => {
+        const { A, B, f } = generateFunction(type);
+        const questionDiv = document.createElement('div');
+        questionDiv.className = 'question';
+        questionDiv.dataset.answer = type;
+
+        questionDiv.innerHTML = `
+                <div class="question-text">
+                    <span>${i + 1}. Classify the following function:</span>
+                    <span class="result-indicator"></span>
+                </div>
+                <div class="relation-details">
+                    A (Domain) = ${formatSet(A)}<br>
+                    B (Codomain) = ${formatSet(B)}<br>
+                    f = ${formatRelation(f)}
+                </div>
+                <div class="radio-group">
+                     ${functionTypes.map(opt => `
+                        <label>
+                            <input type="radio" name="q2-${i}" value="${opt}"> ${opt}
+                        </label>
+                    `).join('')}
+                </div>
+            `;
+        functionContainer.appendChild(questionDiv);
+      });
+    }
+
+    // --- CHECKING ANSWERS ---
+
+    function checkAnswers() {
+      document.querySelectorAll('.question').forEach(q => {
+        const correctAnswer = q.dataset.answer;
+        const selectedRadio = q.querySelector('input[type="radio"]:checked');
+        const indicator = q.querySelector('.result-indicator');
+
+        if (selectedRadio && selectedRadio.value === correctAnswer) {
+          indicator.textContent = '✓';
+          indicator.className = 'result-indicator correct';
+        } else {
+          indicator.textContent = '✗';
+          indicator.className = 'result-indicator incorrect';
+        }
+      });
+    }
+
+    // --- EVENT LISTENERS & INITIALIZATION ---
+    checkBtn.addEventListener('click', checkAnswers);
+    resetBtn.addEventListener('click', generateQuiz);
+    generateQuiz();
+  });
+</script>
+</body>
+</html>
