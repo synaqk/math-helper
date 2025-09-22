@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logic & Reasoning Quiz</title>
+    <style>
+        :root {
+            --bg-color: #f5f5f5;
+            --font-color: #333;
+            --primary-color: #2a7f62;
+            --secondary-color: #4a4a88;
+            --light-gray: #e0e0e0;
+            --border-radius: 8px;
+            --correct-color: #28a745;
+            --incorrect-color: #dc3545;
+            --card-bg: #ffffff;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--font-color);
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+        }
+
+        h1, h2 {
+            border-bottom: 2px solid var(--light-gray);
+            padding-bottom: 10px;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            text-align: center;
+        }
+
+        h2 {
+            color: var(--secondary-color);
+        }
+
+        section {
+            background-color: var(--card-bg);
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+        }
+
+        .question {
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--light-gray);
+        }
+
+        .question:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .question-text {
+            font-weight: bold;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .proposition-display {
+            font-family: "SF Mono", "Consolas", "Menlo", monospace;
+            background-color: #eef2f5;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            text-align: center;
+            font-size: 1.2em;
+        }
+
+        .radio-group label {
+            display: block;
+            margin-bottom: 8px;
+            cursor: pointer;
+            padding: 8px 12px;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+            border: 1px solid transparent;
+        }
+
+        .radio-group label:hover {
+            background-color: #f0f4f8;
+            border-color: #d0d8e0;
+        }
+
+        .radio-group code {
+            background-color: #dde2e7;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+
+        .result-indicator {
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        .correct { color: var(--correct-color); }
+        .incorrect { color: var(--incorrect-color); }
+
+        .info-box {
+            font-size: 0.95em;
+            background-color: #eaf3ef;
+            padding: 15px;
+            border-radius: var(--border-radius);
+            margin-bottom: 20px;
+            border-left: 5px solid var(--primary-color);
+        }
+
+        .info-box ul {
+            padding-left: 20px;
+            margin: 0;
+        }
+
+        .symbol-key {
+            font-size: 0.9em;
+            color: #555;
+            margin-top: 10px;
+        }
+
+        .controls {
+            text-align: center;
+            padding: 20px;
+            background-color: var(--card-bg);
+            border-radius: var(--border-radius);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+        }
+
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 1em;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: background-color 0.2s;
+            margin: 0 10px;
+        }
+
+        button:hover {
+            background-color: #1e5a45;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Identifying Propositions & Logical Equivalence Substitution Quiz</h1>
+
+    <section id="statement-classification">
+        <h2>Part 1: Tautology, Contradiction, or Contingency?</h2>
+        <div class="info-box">
+            Classify each logical statement below.
+            <ul>
+                <li><b>Tautology:</b> A statement that is <strong>always true</strong>.</li>
+                <li><b>Contradiction:</b> A statement that is <strong>always false</strong>.</li>
+                <li><b>Contingency:</b> A statement that can be <strong>either true or false</strong>.</li>
+            </ul>
+            <div class="symbol-key">
+                <strong>Symbols:</strong> ¬ (NOT), ∧ (AND), ∨ (OR), → (IF...THEN), ↔ (IFF), ⊕ (XOR)
+            </div>
+        </div>
+        <div id="statement-classification-questions"></div>
+    </section>
+
+    <section id="logical-equivalence">
+        <h2>Part 2: Logical Equivalence Substitution</h2>
+        <div id="logical-equivalence-questions"></div>
+    </section>
+
+
+    <div class="controls">
+        <button id="check-btn">Check Answers</button>
+        <button id="reset-btn">New Quiz</button>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+
+        // --- DOM ELEMENTS ---
+        const part1Container = document.getElementById('statement-classification-questions');
+        const part2Container = document.getElementById('logical-equivalence-questions');
+        const checkBtn = document.getElementById('check-btn');
+        const resetBtn = document.getElementById('reset-btn');
+
+        // --- DATA POOLS ---
+
+        // Part 1: Propositions for classification
+        const propositions = [
+            { text: 'p ∨ ¬p', func: (p) => p || !p, vars: ['p'] }, { text: 'p ∧ ¬p', func: (p) => p && !p, vars: ['p'] }, { text: 'p ↔ ¬p', func: (p) => p === !p, vars: ['p'] }, { text: 'p → p', func: (p) => !p || p, vars: ['p'] }, { text: 'p → q', func: (p, q) => !p || q, vars: ['p', 'q'] }, { text: 'p ∧ q', func: (p, q) => p && q, vars: ['p', 'q'] }, { text: 'p ⊕ q', func: (p, q) => p !== q, vars: ['p', 'q'] }, { text: '(p ∧ q) → p', func: (p, q) => !(p && q) || p, vars: ['p', 'q'] }, { text: 'p → (p ∨ q)', func: (p, q) => !p || (p || q), vars: ['p', 'q'] }, { text: '(p → q) ∨ (q → p)', func: (p, q) => (!p || q) || (!q || p), vars: ['p', 'q'] }, { text: '(p ↔ q) ↔ ((p → q) ∧ (q → p))', func: (p, q) => (p === q) === ((!p || q) && (!q || p)), vars: ['p', 'q'] }, { text: '¬(p ∧ q) ↔ (¬p ∨ ¬q)', func: (p, q) => !(p && q) === (!p || !q), vars: ['p', 'q'] }, { text: '¬(p ∨ q) ↔ (¬p ∧ ¬q)', func: (p, q) => !(p || q) === (!p && !q), vars: ['p', 'q'] }, { text: '(p → q) ↔ (¬q → ¬p)', func: (p, q) => (!p || q) === (q || !p), vars: ['p', 'q'] }, { text: '(p → q) ∧ (p ∧ ¬q)', func: (p, q) => (!p || q) && (p && !q), vars: ['p', 'q'] }, { text: '(p ∨ q) ∧ (¬p ∧ ¬q)', func: (p, q) => (p || q) && (!p && !q), vars: ['p', 'q'] }, { text: 'p ∧ (q ∨ r)', func: (p, q, r) => p && (q || r), vars: ['p', 'q', 'r'] }, { text: '((p → q) ∧ (q → r)) → (p → r)', func: (p, q, r) => (!((!p || q) && (!q || r))) || (!p || r), vars: ['p', 'q', 'r'] }
+        ];
+
+        // Part 2: Simplification rules
+        const simplificationRules = [
+            { start: 'p ∨ (p ∧ q)', end: 'p', law: 'Absorption Law' },
+            { start: 'p ∧ (p ∨ q)', end: 'p', law: 'Absorption Law' },
+            { start: 'p ∨ ¬p', end: 'T', law: 'Negation Law' },
+            { start: 'p ∧ ¬p', end: 'F', law: 'Negation Law' },
+            { start: 'p ∨ F', end: 'p', law: 'Identity Law' },
+            { start: 'p ∧ T', end: 'p', law: 'Identity Law' },
+            { start: 'p ∨ T', end: 'T', law: 'Domination Law' },
+            { start: 'p ∧ F', end: 'F', law: 'Domination Law' },
+            { start: '¬(¬p)', end: 'p', law: 'Double Negation Law' },
+            { start: 'p → q', end: '¬p ∨ q', law: 'Implication Equivalence' },
+            { start: '¬(p ∧ q)', end: '¬p ∨ ¬q', law: "De Morgan's Law" },
+            { start: '¬(p ∨ q)', end: '¬p ∧ ¬q', law: "De Morgan's Law" },
+            { start: 'p ∨ (q ∧ r)', end: '(p ∨ q) ∧ (p ∨ r)', law: 'Distributive Law' },
+            { start: 'p ∧ (q ∨ r)', end: '(p ∧ q) ∨ (p ∧ r)', law: 'Distributive Law' },
+        ];
+        const allLaws = [...new Set(simplificationRules.map(r => r.law))];
+
+
+        // --- HELPER FUNCTIONS ---
+
+        const shuffleArray = (array) => { for (let i = array.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1));[array[i], array[j]] = [array[j], array[i]]; } return array; };
+
+        // --- QUIZ GENERATION ---
+
+        function generateQuiz() {
+            // Clear containers
+            part1Container.innerHTML = '';
+            part2Container.innerHTML = '';
+
+            // === PART 1: CLASSIFICATION ===
+            const part1Questions = shuffleArray([...propositions]).slice(0, 5);
+            const classificationOptions = ['Tautology', 'Contradiction', 'Contingency'];
+
+            part1Questions.forEach((prop, i) => {
+                const numVars = prop.vars.length;
+                const numCombinations = 1 << numVars;
+                const results = new Set();
+                for (let j = 0; j < numCombinations; j++) {
+                    results.add(prop.func((j & 1) !== 0, (j & 2) !== 0, (j & 4) !== 0));
+                }
+                let correctAnswer;
+                if (results.has(true) && !results.has(false)) correctAnswer = 'Tautology';
+                else if (results.has(false) && !results.has(true)) correctAnswer = 'Contradiction';
+                else correctAnswer = 'Contingency';
+
+                const questionDiv = document.createElement('div');
+                questionDiv.className = 'question';
+                questionDiv.dataset.answer = correctAnswer;
+                questionDiv.innerHTML = `
+                <div class="question-text">
+                    <span>${i + 1}. Identify the proposition:</span>
+                    <span class="result-indicator"></span>
+                </div>
+                <div class="proposition-display"><code>${prop.text}</code></div>
+                <div class="radio-group">${classificationOptions.map(opt => `<label><input type="radio" name="q1-${i}" value="${opt}"> ${opt}</label>`).join('')}</div>
+            `;
+                part1Container.appendChild(questionDiv);
+            });
+
+            // === PART 2: EQUIVALENCE SUBSTITUTION ===
+            const part2Questions = shuffleArray([...simplificationRules]).slice(0, 5);
+
+            part2Questions.forEach((rule, i) => {
+                const correctAnswerText = `<code>${rule.end}</code> by <strong>${rule.law}</strong>`;
+                const options = new Set([correctAnswerText]);
+
+                // Generate 3 unique distractors
+                while (options.size < 4) {
+                    const randomRule = simplificationRules[Math.floor(Math.random() * simplificationRules.length)];
+                    const randomLaw = allLaws[Math.floor(Math.random() * allLaws.length)];
+
+                    // Mix and match parts to create plausible distractors
+                    const distractorType = Math.random();
+                    let distractorText;
+                    if (distractorType < 0.4) { // Wrong end, right law
+                        distractorText = `<code>${randomRule.end}</code> by <strong>${rule.law}</strong>`;
+                    } else if (distractorType < 0.8) { // Right end, wrong law
+                        distractorText = `<code>${rule.end}</code> by <strong>${randomLaw}</strong>`;
+                    } else { // Wrong end, wrong law
+                        distractorText = `<code>${randomRule.end}</code> by <strong>${randomLaw}</strong>`;
+                    }
+                    options.add(distractorText);
+                }
+
+                const shuffledOptions = shuffleArray([...options]);
+                const correctAnswerValue = shuffledOptions.indexOf(correctAnswerText);
+
+                const questionDiv = document.createElement('div');
+                questionDiv.className = 'question';
+                questionDiv.dataset.answer = correctAnswerValue;
+                questionDiv.innerHTML = `
+                <div class="question-text">
+                    <span>${i + 1}. Apply one logical equivalence rule to simplify the expression:</span>
+                    <span class="result-indicator"></span>
+                </div>
+                <div class="proposition-display"><code>${rule.start}</code></div>
+                <div class="radio-group">${shuffledOptions.map((opt, j) => `<label><input type="radio" name="q2-${i}" value="${j}"> ${opt}</label>`).join('')}</div>
+            `;
+                part2Container.appendChild(questionDiv);
+            });
+        }
+
+        // --- CHECKING ANSWERS ---
+
+        function checkAnswers() {
+            document.querySelectorAll('.question').forEach(q => {
+                const correctAnswer = q.dataset.answer;
+                const selectedRadio = q.querySelector('input[type="radio"]:checked');
+                const indicator = q.querySelector('.result-indicator');
+
+                if (selectedRadio && selectedRadio.value === correctAnswer) {
+                    indicator.textContent = '✓';
+                    indicator.className = 'result-indicator correct';
+                } else {
+                    indicator.textContent = '✗';
+                    indicator.className = 'result-indicator incorrect';
+                }
+            });
+        }
+
+        // --- EVENT LISTENERS & INITIALIZATION ---
+        checkBtn.addEventListener('click', checkAnswers);
+        resetBtn.addEventListener('click', generateQuiz);
+        generateQuiz();
+    });
+</script>
+</body>
+</html>
