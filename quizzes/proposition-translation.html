@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Propositions to English Quiz</title>
+  <style>
+    :root {
+      --bg-color: #f8f9fa;
+      --font-color: #212529;
+      --primary-color: #584B8A; /* A deep purple */
+      --light-gray: #e0e0e0;
+      --border-radius: 8px;
+      --correct-color: #198754;
+      --incorrect-color: #dc3545;
+      --card-bg: #ffffff;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--font-color);
+      line-height: 1.6;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .container {
+      max-width: 800px;
+      width: 100%;
+    }
+
+    h1, h2 {
+      border-bottom: 2px solid var(--light-gray);
+      padding-bottom: 10px;
+    }
+
+    h1 {
+      color: var(--primary-color);
+      text-align: center;
+    }
+
+    h2 {
+      color: var(--primary-color);
+    }
+
+    section {
+      background-color: var(--card-bg);
+      padding: 20px;
+      margin-bottom: 20px;
+      border-radius: var(--border-radius);
+      box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+    }
+
+    .question {
+      margin-bottom: 25px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--light-gray);
+    }
+
+    .question:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .question-header {
+      margin-bottom: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .proposition-display {
+      font-family: "SF Mono", "Consolas", "Menlo", monospace;
+      background-color: #f7f7f7;
+      padding: 15px;
+      border-radius: 4px;
+      margin-bottom: 15px;
+      text-align: center;
+      font-size: 1.3em;
+      border-left: 3px solid var(--primary-color);
+    }
+
+    .radio-group label {
+      display: block;
+      margin-bottom: 8px;
+      cursor: pointer;
+      padding: 8px 12px;
+      border-radius: 4px;
+      transition: background-color 0.2s, border-color 0.2s;
+      border: 1px solid #eee;
+    }
+
+    .radio-group label:hover {
+      background-color: #f5f5f5;
+      border-color: #ccc;
+    }
+
+    .correct-answer-highlight {
+      background-color: #e8f5e9;
+      border-color: var(--correct-color) !important;
+    }
+
+    .result-indicator {
+      font-size: 1.5em;
+      font-weight: bold;
+    }
+
+    .correct { color: var(--correct-color); }
+    .incorrect { color: var(--incorrect-color); }
+
+    .info-box {
+      font-size: 0.95em;
+      background-color: #f4f2f9;
+      padding: 15px;
+      border-radius: var(--border-radius);
+      margin-bottom: 20px;
+      border-left: 5px solid var(--primary-color);
+    }
+
+    .definitions-key {
+      font-family: "SF Mono", "Consolas", "Menlo", monospace;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 5px 20px;
+    }
+
+    .explanation-text {
+      display: none; /* Hidden by default */
+      margin-top: 15px;
+      padding: 12px;
+      background-color: #f1f1f1;
+      border-left: 4px solid #6c757d;
+      border-radius: 4px;
+      font-size: 0.95em;
+    }
+
+    .controls {
+      text-align: center;
+      padding: 20px;
+      background-color: var(--card-bg);
+      border-radius: var(--border-radius);
+      box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+    }
+
+    button {
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      padding: 12px 25px;
+      font-size: 1em;
+      border-radius: var(--border-radius);
+      cursor: pointer;
+      transition: background-color 0.2s;
+      margin: 0 10px;
+    }
+
+    button:hover {
+      background-color: #433871;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>Propositions to English Quiz</h1>
+
+  <section id="translation-quiz">
+    <h2>Translate the Proposition</h2>
+    <div class="info-box">
+      For all questions in this quiz, use the following definitions for the sequence:
+      <div class="definitions-key">
+        <div><b>i</b> = "The sequence is increasing"</div>
+        <div><b>d</b> = "The sequence is decreasing"</div>
+        <div><b>s</b> = "The sequence is short"</div>
+        <div><b>l</b> = "The sequence is long"</div>
+      </div>
+    </div>
+    <div id="questions-container"></div>
+  </section>
+
+  <div class="controls">
+    <button id="check-btn">Check Answers</button>
+    <button id="reset-btn">New Quiz</button>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+
+    const questionsContainer = document.getElementById('questions-container');
+    const checkBtn = document.getElementById('check-btn');
+    const resetBtn = document.getElementById('reset-btn');
+
+    const questionsPool = [
+      // --- User Requested Questions ---
+      {
+        proposition: "(i ∧ l) → ¬s",
+        correct: "If the sequence is increasing and long, then it is not short.",
+        distractors: [
+          "The sequence is increasing and long, and it is not short.",
+          "The sequence is not short only if it is increasing and long.",
+          "If the sequence is not short, then it is increasing and long."
+        ],
+        explanation: "The `→` operator translates to 'if...then...'. The antecedent (the 'if' part) is the conjunction `(i ∧ l)`, meaning 'increasing AND long'. The consequent (the 'then' part) is `¬s`, meaning 'not short'."
+      },
+      {
+        proposition: "¬(s ∨ i)",
+        correct: "The sequence is neither short nor increasing.",
+        distractors: [
+          "The sequence is not short or not increasing.",
+          "The sequence is short and not increasing.",
+          "It is not the case that the sequence is short and increasing."
+        ],
+        explanation: "By De Morgan's Law, `¬(s ∨ i)` is equivalent to `¬s ∧ ¬i`. In English, 'not s AND not i' is most naturally phrased as 'neither s nor i'."
+      },
+      {
+        proposition: "¬s ↔ l",
+        correct: "The sequence is not short if and only if it is long.",
+        distractors: [
+          "If the sequence is not short, then it is long.",
+          "The sequence is long only if it is not short.",
+          "The sequence is not short and it is long."
+        ],
+        explanation: "The `↔` operator signifies a biconditional relationship, which is translated as 'if and only if' (or 'iff')."
+      },
+      {
+        proposition: "i ∧ l",
+        correct: "The sequence is increasing and long.",
+        distractors: [
+          "The sequence is increasing or long.",
+          "If the sequence is increasing, then it is long.",
+          "The sequence is increasing if and only if it is long."
+        ],
+        explanation: "The `∧` operator represents a conjunction, which is translated as 'and'."
+      },
+      {
+        proposition: "d ∨ s",
+        correct: "The sequence is decreasing or short.",
+        distractors: [
+          "The sequence is decreasing and short.",
+          "The sequence is decreasing, but not short.",
+          "If the sequence is decreasing, it is short."
+        ],
+        explanation: "The `∨` operator represents a disjunction, translated as 'or'. In logic, this is an inclusive OR, meaning it could be one, the other, or both."
+      },
+      {
+        proposition: "s ∨ l",
+        correct: "The sequence is short or long.",
+        distractors: [
+          "The sequence is short and long.",
+          "The sequence is neither short nor long.",
+          "The sequence is short if it is long."
+        ],
+        explanation: "The `∨` operator represents a disjunction, translated as 'or'."
+      },
+      {
+        proposition: "l → d",
+        correct: "If the sequence is long, then it is decreasing.",
+        distractors: [
+          "If the sequence is decreasing, then it is long.",
+          "The sequence is long and decreasing.",
+          "The sequence is long only if it is decreasing."
+        ],
+        explanation: "The `→` operator is a conditional. `l → d` translates to 'If l, then d'."
+      },
+      {
+        proposition: "¬l → (s ∧ i)",
+        correct: "The sequence is short and increasing provided it is not long.",
+        distractors: [
+          "If the sequence is short and increasing, then it is not long.",
+          "The sequence is not long, and it is short and increasing.",
+          "The sequence is short or increasing provided it is not long."
+        ],
+        explanation: "The phrase 'A provided B' is a way of saying 'If B, then A'. Here, A is 'short and increasing' `(s ∧ i)`, and B is 'it is not long' `(¬l)`."
+      },
+      // --- Additional Variety ---
+      {
+        proposition: "s → ¬l",
+        correct: "If a sequence is short, then it is not long.",
+        distractors: [
+          "A sequence is short and not long.",
+          "A sequence is not long if it is short.",
+          "A sequence is short unless it is long."
+        ],
+        explanation: "A direct translation of the conditional `→` and negation `¬`."
+      },
+      {
+        proposition: "i ↔ ¬d",
+        correct: "A sequence is increasing if and only if it is not decreasing.",
+        distractors: [
+          "A sequence is increasing or it is not decreasing.",
+          "A sequence that is not decreasing is increasing.",
+          "A sequence is increasing and not decreasing."
+        ],
+        explanation: "The biconditional operator `↔` ('iff') connects 'increasing' (i) with 'not decreasing' (¬d)."
+      },
+      {
+        proposition: "(s ∨ l) → ¬(s ∧ l)",
+        correct: "If a sequence is short or long, then it is not both short and long.",
+        distractors: [
+          "A sequence is short or long, but it is not short and long.",
+          "A sequence is short or long if and only if it is not both short and long.",
+          "A sequence is neither short nor long."
+        ],
+        explanation: "This proposition states that being short or long implies that the sequence cannot be both simultaneously. This describes an exclusive relationship."
+      },
+      {
+        proposition: "¬i",
+        correct: "The sequence is not increasing.",
+        distractors: [
+          "The sequence is decreasing.",
+          "The sequence is short.",
+          "The sequence is neither increasing nor decreasing."
+        ],
+        explanation: "The `¬` symbol is the negation operator, which directly translates to 'not'."
+      },
+      {
+        proposition: "l ∧ ¬s",
+        correct: "The sequence is long but not short.",
+        distractors: [
+          "The sequence is long or not short.",
+          "If the sequence is long, it is not short.",
+          "The sequence is not long and short."
+        ],
+        explanation: "The `∧` operator represents a conjunction ('and'), which can also be phrased as 'but' to show contrast. `¬s` translates to 'not short'."
+      },
+      {
+        proposition: "¬l → ¬i",
+        correct: "If the sequence is not long, then it is not increasing.",
+        distractors: [
+          "If the sequence is not increasing, then it is not long.",
+          "The sequence is not long or not increasing.",
+          "The sequence is not long if and only if it is not increasing."
+        ],
+        explanation: "This is a direct translation of a conditional statement (`→`) where both the antecedent (`¬l`) and the consequent (`¬i`) are negated."
+      },
+      {
+        proposition: "d → s",
+        correct: "The sequence is decreasing only if it is short.",
+        distractors: [
+          "The sequence is decreasing if it is short.",
+          "The sequence is short only if it is decreasing.",
+          "The sequence is decreasing and short."
+        ],
+        explanation: "The phrase 'A only if B' is a common way to express a conditional and translates directly to `A → B`."
+      },
+      {
+        proposition: "i → ¬s",
+        correct: "A sequence being increasing is a sufficient condition for it to not be short.",
+        distractors: [
+          "A sequence being increasing is a necessary condition for it to not be short.",
+          "A sequence is not short and increasing.",
+          "A sequence is not short unless it is increasing."
+        ],
+        explanation: "A conditional statement `p → q` can be read as 'p is a sufficient condition for q'. In this case, 'p' is `i` and 'q' is `¬s`."
+      },
+      {
+        proposition: "l → (i ∨ d)",
+        correct: "If the sequence is long, then it is increasing or decreasing.",
+        distractors: [
+          "The sequence is long and it is increasing or decreasing.",
+          "The sequence is long only if it is increasing and decreasing.",
+          "If the sequence is increasing or decreasing, then it is long."
+        ],
+        explanation: "This is a conditional statement where the consequent (the 'then' part) is a disjunction (`∨`), meaning 'increasing OR decreasing'."
+      }
+    ];
+
+    const shuffleArray = (array) => {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    };
+
+    function generateQuiz() {
+      questionsContainer.innerHTML = '';
+      const selectedQuestions = shuffleArray([...questionsPool]).slice(0, 5);
+
+      selectedQuestions.forEach((q, i) => {
+        const options = shuffleArray([q.correct, ...q.distractors]);
+
+        const optionsHtml = options.map(opt => `
+                <label>
+                    <input type="radio" name="q-${i}" value="${opt}">
+                    ${opt}
+                </label>
+            `).join('');
+
+        const questionDiv = document.createElement('div');
+        questionDiv.className = 'question';
+        questionDiv.dataset.answer = q.correct;
+        questionDiv.innerHTML = `
+                <div class="question-header">
+                    <strong>Question ${i + 1}</strong>
+                    <span class="result-indicator"></span>
+                </div>
+                <div class="proposition-display"><code>${q.proposition}</code></div>
+                <div class="radio-group">${optionsHtml}</div>
+                <div class="explanation-text">${q.explanation}</div>
+            `;
+        questionsContainer.appendChild(questionDiv);
+      });
+    }
+
+    function checkAnswers() {
+      document.querySelectorAll('.question').forEach(q => {
+        const correctAnswer = q.dataset.answer;
+        const selectedRadio = q.querySelector('input[type="radio"]:checked');
+        const indicator = q.querySelector('.result-indicator');
+        const explanation = q.querySelector('.explanation-text');
+
+        if(explanation) explanation.style.display = 'block';
+
+        if (selectedRadio && selectedRadio.value === correctAnswer) {
+          indicator.textContent = '✓';
+          indicator.className = 'result-indicator correct';
+        } else {
+          indicator.textContent = '✗';
+          indicator.className = 'result-indicator incorrect';
+
+          const correctRadio = q.querySelector(`input[value="${CSS.escape(correctAnswer)}"]`);
+          if(correctRadio) {
+            correctRadio.parentElement.classList.add('correct-answer-highlight');
+          }
+        }
+      });
+    }
+
+    // --- EVENT LISTENERS & INITIALIZATION ---
+    checkBtn.addEventListener('click', checkAnswers);
+    resetBtn.addEventListener('click', generateQuiz);
+    generateQuiz();
+  });
+</script>
+</body>
+</html>
