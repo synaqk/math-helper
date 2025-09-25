@@ -205,7 +205,24 @@
 
         // Part 1: Propositions for classification
         const propositions = [
-            { text: 'p ∨ ¬p', func: (p) => p || !p, vars: ['p'] }, { text: 'p ∧ ¬p', func: (p) => p && !p, vars: ['p'] }, { text: 'p ↔ ¬p', func: (p) => p === !p, vars: ['p'] }, { text: 'p → p', func: (p) => !p || p, vars: ['p'] }, { text: 'p → q', func: (p, q) => !p || q, vars: ['p', 'q'] }, { text: 'p ∧ q', func: (p, q) => p && q, vars: ['p', 'q'] }, { text: 'p ⊕ q', func: (p, q) => p !== q, vars: ['p', 'q'] }, { text: '(p ∧ q) → p', func: (p, q) => !(p && q) || p, vars: ['p', 'q'] }, { text: 'p → (p ∨ q)', func: (p, q) => !p || (p || q), vars: ['p', 'q'] }, { text: '(p → q) ∨ (q → p)', func: (p, q) => (!p || q) || (!q || p), vars: ['p', 'q'] }, { text: '(p ↔ q) ↔ ((p → q) ∧ (q → p))', func: (p, q) => (p === q) === ((!p || q) && (!q || p)), vars: ['p', 'q'] }, { text: '¬(p ∧ q) ↔ (¬p ∨ ¬q)', func: (p, q) => !(p && q) === (!p || !q), vars: ['p', 'q'] }, { text: '¬(p ∨ q) ↔ (¬p ∧ ¬q)', func: (p, q) => !(p || q) === (!p && !q), vars: ['p', 'q'] }, { text: '(p → q) ↔ (¬q → ¬p)', func: (p, q) => (!p || q) === (q || !p), vars: ['p', 'q'] }, { text: '(p → q) ∧ (p ∧ ¬q)', func: (p, q) => (!p || q) && (p && !q), vars: ['p', 'q'] }, { text: '(p ∨ q) ∧ (¬p ∧ ¬q)', func: (p, q) => (p || q) && (!p && !q), vars: ['p', 'q'] }, { text: 'p ∧ (q ∨ r)', func: (p, q, r) => p && (q || r), vars: ['p', 'q', 'r'] }, { text: '((p → q) ∧ (q → r)) → (p → r)', func: (p, q, r) => (!((!p || q) && (!q || r))) || (!p || r), vars: ['p', 'q', 'r'] }
+            { text: 'p ∨ ¬p', func: (p) => p || !p, vars: ['p'] },
+            { text: 'p ∧ ¬p', func: (p) => p && !p, vars: ['p'] },
+            { text: 'p ↔ ¬p', func: (p) => p === !p, vars: ['p'] },
+            { text: 'p → p', func: (p) => !p || p, vars: ['p'] },
+            { text: 'p → q', func: (p, q) => !p || q, vars: ['p', 'q'] },
+            { text: 'p ∧ q', func: (p, q) => p && q, vars: ['p', 'q'] },
+            { text: 'p ⊕ q', func: (p, q) => p !== q, vars: ['p', 'q'] },
+            { text: '(p ∧ q) → p', func: (p, q) => !(p && q) || p, vars: ['p', 'q'] },
+            { text: 'p → (p ∨ q)', func: (p, q) => !p || (p || q), vars: ['p', 'q'] },
+            { text: '(p → q) ∨ (q → p)', func: (p, q) => (!p || q) || (!q || p), vars: ['p', 'q'] },
+            { text: '(p ↔ q) ↔ ((p → q) ∧ (q → p))', func: (p, q) => (p === q) === ((!p || q) && (!q || p)), vars: ['p', 'q'] },
+            { text: '¬(p ∧ q) ↔ (¬p ∨ ¬q)', func: (p, q) => !(p && q) === (!p || !q), vars: ['p', 'q'] },
+            { text: '¬(p ∨ q) ↔ (¬p ∧ ¬q)', func: (p, q) => !(p || q) === (!p && !q), vars: ['p', 'q'] },
+            { text: '(p → q) ↔ (¬q → ¬p)', func: (p, q) => (!p || q) === (q || !p), vars: ['p', 'q'] },
+            { text: '(p → q) ∧ (p ∧ ¬q)', func: (p, q) => (!p || q) && (p && !q), vars: ['p', 'q'] },
+            { text: '(p ∨ q) ∧ (¬p ∧ ¬q)', func: (p, q) => (p || q) && (!p && !q), vars: ['p', 'q'] },
+            { text: 'p ∧ (q ∨ r)', func: (p, q, r) => p && (q || r), vars: ['p', 'q', 'r'] },
+            { text: '((p → q) ∧ (q → r)) → (p → r)', func: (p, q, r) => (!((!p || q) && (!q || r))) || (!p || r), vars: ['p', 'q', 'r'] }
         ];
 
         // Part 2: Simplification rules

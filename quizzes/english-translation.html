@@ -344,25 +344,25 @@
         explanation: "This sentence applies two negations. 'The system is not online' is ¬p. 'It is not true that...' applies another negation to the entire phrase, resulting in a double negation ¬(¬p)."
       },
       {
-        "definitions": { "d": "The plant will die.", "w": "You water it." },
-        "sentence": "The plant will die unless you water it.",
-        "correct": "¬w → d",
-        "distractors": ["w → ¬d", "d → w", "d ∧ w"],
-        "explanation": "The phrase 'A unless B' is a conditional statement that means 'If not B, then A'. In this case, 'If you do not water it' (¬w), 'then the plant will die' (d)."
+        definitions: { "d": "The plant will die.", "w": "You water it." },
+        sentence: "The plant will die unless you water it.",
+        correct: "¬w → d",
+        distractors: ["w → ¬d", "d → w", "d ∧ w"],
+        explanation: "The phrase 'A unless B' is a conditional statement that means 'If not B, then A'. In this case, 'If you do not water it' (¬w), 'then the plant will die' (d)."
       },
       {
-        "definitions": { "s": "I study the course.", "p": "I will pass the course." },
-        "sentence": "If I do not study, then I will not pass the course.",
-        "correct": "¬s → ¬p",
-        "distractors": ["s → p", "¬p → ¬s", "¬s ∧ ¬p"],
-        "explanation": "This is a direct 'If... then...' conditional (→). The statement 'I do not study' is the antecedent (¬s), and 'I will not pass the course' is the consequent (¬p). This form is known as the inverse."
+        definitions: { "s": "I study the course.", "p": "I will pass the course." },
+        sentence: "If I do not study, then I will not pass the course.",
+        correct: "¬s → ¬p",
+        distractors: ["s → p", "¬p → ¬s", "¬s ∧ ¬p"],
+        explanation: "This is a direct 'If... then...' conditional (→). The statement 'I do not study' is the antecedent (¬s), and 'I will not pass the course' is the consequent (¬p). This form is known as the inverse."
       },
       {
-        "definitions": { "s": "I study the course.", "p": "I will pass the course." },
-        "sentence": "I study the course but do not pass it.",
-        "correct": "s ∧ ¬p",
-        "distractors": ["s → ¬p", "s ∨ ¬p", "¬(s ∧ p)"],
-        "explanation": "The word 'but' functions logically as an 'and' (∧). It connects the two statements 'I study the course' (s) and 'I do not pass it' (¬p)."
+        definitions: { "s": "I study the course.", "p": "I will pass the course." },
+        sentence: "I study the course but do not pass it.",
+        correct: "s ∧ ¬p",
+        distractors: ["s → ¬p", "s ∨ ¬p", "¬(s ∧ p)"],
+        explanation: "The word 'but' functions logically as an 'and' (∧). It connects the two statements 'I study the course' (s) and 'I do not pass it' (¬p)."
       }
     ];
 
