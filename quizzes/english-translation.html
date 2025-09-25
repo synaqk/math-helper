@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>English to Propositions Quiz</title>
+  <style>
+    :root {
+      --bg-color: #fdfdfd;
+      --font-color: #333;
+      --primary-color: #d95b00; /* A scholarly orange */
+      --secondary-color: #4a4a88;
+      --light-gray: #e0e0e0;
+      --border-radius: 8px;
+      --correct-color: #28a745;
+      --incorrect-color: #dc3545;
+      --card-bg: #ffffff;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--font-color);
+      line-height: 1.6;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .container {
+      max-width: 800px;
+      width: 100%;
+    }
+
+    h1, h2 {
+      border-bottom: 2px solid var(--light-gray);
+      padding-bottom: 10px;
+    }
+
+    h1 {
+      color: var(--primary-color);
+      text-align: center;
+    }
+
+    h2 {
+      color: var(--primary-color);
+    }
+
+    section {
+      background-color: var(--card-bg);
+      padding: 20px;
+      margin-bottom: 20px;
+      border-radius: var(--border-radius);
+      box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+    }
+
+    .question {
+      margin-bottom: 25px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--light-gray);
+    }
+
+    .question:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .question-header {
+      margin-bottom: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .definitions {
+      font-family: "SF Mono", "Consolas", "Menlo", monospace;
+      background-color: #f7f7f7;
+      padding: 10px 15px;
+      border-radius: 4px;
+      margin-bottom: 15px;
+      border-left: 3px solid var(--primary-color);
+    }
+
+    .english-sentence {
+      font-size: 1.1em;
+      font-weight: bold;
+      margin-bottom: 15px;
+      padding: 10px;
+      background-color: #fff9f2;
+      border-radius: 4px;
+    }
+
+    .radio-group label {
+      display: block;
+      margin-bottom: 8px;
+      cursor: pointer;
+      padding: 8px 12px;
+      border-radius: 4px;
+      transition: background-color 0.2s, border-color 0.2s;
+      border: 1px solid #eee;
+    }
+
+    .radio-group label:hover {
+      background-color: #f5f5f5;
+      border-color: #ccc;
+    }
+
+    .radio-group code {
+      font-size: 1.1em;
+      background-color: #e9e9e9;
+      padding: 2px 6px;
+      border-radius: 3px;
+    }
+
+    .correct-answer-highlight {
+      background-color: #e6ffed;
+      border-color: #28a745 !important;
+    }
+
+    .result-indicator {
+      font-size: 1.5em;
+      font-weight: bold;
+    }
+
+    .correct { color: var(--correct-color); }
+    .incorrect { color: var(--incorrect-color); }
+
+    .info-box {
+      font-size: 0.95em;
+      background-color: #fff9f2;
+      padding: 15px;
+      border-radius: var(--border-radius);
+      margin-bottom: 20px;
+      border-left: 5px solid var(--primary-color);
+    }
+
+    .info-box code {
+      background-color: #faeadd;
+      padding: 2px 5px;
+      border-radius: 3px;
+    }
+
+    .explanation-text {
+      display: none; /* Hidden by default */
+      margin-top: 15px;
+      padding: 12px;
+      background-color: #f1f1f1;
+      border-left: 4px solid #6c757d;
+      border-radius: 4px;
+      font-size: 0.95em;
+    }
+
+    .controls {
+      text-align: center;
+      padding: 20px;
+      background-color: var(--card-bg);
+      border-radius: var(--border-radius);
+      box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+    }
+
+    button {
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      padding: 12px 25px;
+      font-size: 1em;
+      border-radius: var(--border-radius);
+      cursor: pointer;
+      transition: background-color 0.2s;
+      margin: 0 10px;
+    }
+
+    button:hover {
+      background-color: #b34a00;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>English to Propositional Logic Quiz</h1>
+
+  <section id="translation-quiz">
+    <h2>Translate the Statement</h2>
+    <div class="info-box">
+      For each question, use the given definitions to translate the English sentence into a formal proposition.
+      <br><strong>Key:</strong>
+      <code>¬</code> (NOT),
+      <code>∧</code> (AND),
+      <code>∨</code> (OR),
+      <code>→</code> (IF...THEN),
+      <code>↔</code> (IFF)
+    </div>
+    <div id="questions-container"></div>
+  </section>
+
+  <div class="controls">
+    <button id="check-btn">Check Answers</button>
+    <button id="reset-btn">New Quiz</button>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+
+    const questionsContainer = document.getElementById('questions-container');
+    const checkBtn = document.getElementById('check-btn');
+    const resetBtn = document.getElementById('reset-btn');
+
+    const questionsPool = [
+      {
+        definitions: { p: "It is sunny.", q: "It is cold." },
+        sentence: "It is sunny and it is not cold.",
+        correct: "p ∧ ¬q",
+        distractors: ["p ∨ ¬q", "¬(p ∧ q)", "¬p ∧ q"],
+        explanation: "The word 'and' translates to the conjunction operator (∧). 'Not cold' is the negation of q (¬q)."
+      },
+      {
+        definitions: { p: "You study hard.", q: "You will pass the exam." },
+        sentence: "If you study hard, then you will pass the exam.",
+        correct: "p → q",
+        distractors: ["q → p", "p ∧ q", "p ↔ q"],
+        explanation: "The 'If p, then q' structure directly translates to the conditional operator (→), where p is the antecedent and q is the consequent."
+      },
+      {
+        definitions: { p: "The train arrives on time.", q: "I will be late." },
+        sentence: "I will not be late if and only if the train arrives on time.",
+        correct: "¬q ↔ p",
+        distractors: ["p → ¬q", "¬q → p", "¬(q ↔ p)"],
+        explanation: "'If and only if' signifies a biconditional relationship (↔), linking the two statements 'I will not be late' (¬q) and 'the train arrives on time' (p)."
+      },
+      {
+        definitions: { p: "I will go to the movie.", q: "I will go to the park." },
+        sentence: "I will neither go to the movie nor go to the park.",
+        correct: "¬p ∧ ¬q",
+        distractors: ["¬(p ∧ q)", "p ∨ q", "¬p ∨ ¬q"],
+        explanation: "'Neither p nor q' means 'not p AND not q'. This is a conjunction of two negations. It's equivalent to ¬(p ∨ q) by De Morgan's laws."
+      },
+      {
+        definitions: { p: "You have a ticket.", q: "You can enter the concert." },
+        sentence: "You can enter the concert only if you have a ticket.",
+        correct: "q → p",
+        distractors: ["p → q", "p ↔ q", "p ∧ q"],
+        explanation: "The phrase 'A only if B' means that B is necessary for A. If A happened, B must have also happened. This translates to A → B. Here, A is 'You can enter' (q) and B is 'You have a ticket' (p)."
+      },
+      {
+        definitions: { p: "You are a citizen.", q: "You can vote." },
+        sentence: "Being a citizen is a necessary condition for being able to vote.",
+        correct: "q → p",
+        distractors: ["p → q", "p ↔ q", "q ∧ p"],
+        explanation: "'B is necessary for A' means that if you have A, you must have B. This translates to A → B. Here, A is 'You can vote' (q) and B is 'Being a citizen' (p)."
+      },
+      {
+        definitions: { p: "It rains.", q: "We will have a picnic." },
+        sentence: "We will have a picnic unless it rains.",
+        correct: "¬p → q",
+        distractors: ["p → ¬q", "p → q", "p ∧ ¬q"],
+        explanation: "'q unless p' means 'If not p, then q'. This translates to ¬p → q. (This is also logically equivalent to p ∨ q)."
+      },
+      {
+        definitions: { p: "You finish your homework.", q: "You can play video games." },
+        sentence: "Finishing your homework is sufficient for you to be able to play video games.",
+        correct: "p → q",
+        distractors: ["q → p", "p ∨ q", "p ↔ q"],
+        explanation: "'A is sufficient for B' means that if you have A, it's enough to guarantee B. This directly translates to A → B."
+      },
+      {
+        definitions: { p: "It is cold.", q: "It is raining.", r: "I will wear a jacket." },
+        sentence: "If it is cold or raining, I will wear a jacket.",
+        correct: "(p ∨ q) → r",
+        distractors: ["p ∨ (q → r)", "r → (p ∨ q)", "(p ∧ q) → r"],
+        explanation: "The condition for the 'if' statement is a disjunction ('cold or raining', p ∨ q). This entire condition serves as the antecedent for the main conditional statement."
+      },
+      {
+        definitions: { p: "The alarm rings.", q: "I wake up." },
+        sentence: "I wake up whenever the alarm rings.",
+        correct: "p → q",
+        distractors: ["q → p", "p ∧ q", "p ↔ q"],
+        explanation: "'q whenever p' is a common way of phrasing 'If p, then q'. The alarm ringing (p) is the condition that leads to waking up (q)."
+      },
+      {
+        definitions: { p: "I have a car.", q: "I have a driver's license." },
+        sentence: "I have a driver's license, but I don't have a car.",
+        correct: "q ∧ ¬p",
+        distractors: ["q → ¬p", "¬(q ∧ p)", "q ∨ ¬p"],
+        explanation: "The word 'but' functions logically as 'and' (∧), connecting the two ideas. 'Don't have a car' is the negation of p (¬p)."
+      },
+      {
+        definitions: { p: "The defendant is guilty.", q: "The witness is lying." },
+        sentence: "The defendant is guilty if the witness is not lying.",
+        correct: "¬q → p",
+        distractors: ["p → ¬q", "q → p", "p ∧ ¬q"],
+        explanation: "This sentence structure is 'p if q'. This is a direct conditional, q → p. In this case, the condition is 'the witness is not lying' (¬q), so the translation is ¬q → p."
+      },
+      {
+        definitions: { p: "I will go running.", q: "It is raining." },
+        sentence: "It is not the case that I will go running and it is raining.",
+        correct: "¬(p ∧ q)",
+        distractors: ["¬p ∧ ¬q", "¬p ∧ q", "¬p ∨ ¬q"],
+        explanation: "The phrase 'It is not the case that...' applies a negation (¬) to the entire statement that follows it. The statement 'I will go running and it is raining' is `p ∧ q`."
+      },
+      {
+        definitions: { p: "The prize is a car.", q: "The prize is a boat." },
+        sentence: "The prize is either a car or a boat, but not both.",
+        correct: "(p ∨ q) ∧ ¬(p ∧ q)",
+        distractors: ["p ∨ q", "p ∧ q", "p ↔ ¬q"],
+        explanation: "This is an Exclusive OR (XOR). 'Either p or q' is `p ∨ q`. The phrase 'but not both' adds the condition that `p ∧ q` is false, so we conjoin `¬(p ∧ q)`."
+      },
+      {
+        definitions: { p: "The switch is on.", q: "The bulb is good.", r: "The light is on." },
+        sentence: "The light is on if and only if the switch is on and the bulb is good.",
+        correct: "r ↔ (p ∧ q)",
+        distractors: ["(p ∧ q) → r", "r → (p ∧ q)", "r ∧ p ∧ q"],
+        explanation: "'If and only if' indicates a biconditional (↔). It connects the statement 'The light is on' (r) with the compound condition 'the switch is on and the bulb is good' (p ∧ q)."
+      },
+      {
+        definitions: { p: "You get an A+.", q: "You complete all assignments." },
+        sentence: "Completing all assignments is necessary, but not sufficient, for getting an A+.",
+        correct: "(p → q) ∧ ¬(q → p)",
+        distractors: ["(q → p) ∧ ¬(p → q)", "p ↔ q", "p → q"],
+        explanation: "'q is necessary for p' translates to `p → q`. 'q is not sufficient for p' is the negation of 'q is sufficient for p' (¬(q → p)). 'But' acts as an 'and' (∧) connecting them."
+      },
+      {
+        definitions: { p: "We will go to the beach.", q: "The weather is good.", r: "We have sunscreen." },
+        sentence: "We will go to the beach only if the weather is good and we have sunscreen.",
+        correct: "p → (q ∧ r)",
+        distractors: ["(q ∧ r) → p", "p ∧ q ∧ r", "p ↔ (q ∧ r)"],
+        explanation: "'A only if B' translates to A → B. Here, A is 'We will go to the beach' (p) and B is the compound condition 'the weather is good and we have sunscreen' (q ∧ r)."
+      },
+      {
+        definitions: { p: "I will eat dessert.", q: "I finish my vegetables.", r: "It is a special occasion." },
+        sentence: "I will eat dessert if I finish my vegetables or if it is a special occasion.",
+        correct: "(q ∨ r) → p",
+        distractors: ["p → (q ∨ r)", "p ↔ (q ∨ r)", "(q ∧ r) → p"],
+        explanation: "This is a 'p if q' structure, which translates to q → p. The condition (the 'if' part) is a disjunction: 'I finish my vegetables or it is a special occasion' (q ∨ r)."
+      },
+      {
+        definitions: { p: "The system is online." },
+        sentence: "It is not true that the system is not online.",
+        correct: "¬(¬p)",
+        distractors: ["¬p", "p ∧ ¬p", "p"],
+        explanation: "This sentence applies two negations. 'The system is not online' is ¬p. 'It is not true that...' applies another negation to the entire phrase, resulting in a double negation ¬(¬p)."
+      },
+      {
+        "definitions": { "d": "The plant will die.", "w": "You water it." },
+        "sentence": "The plant will die unless you water it.",
+        "correct": "¬w → d",
+        "distractors": ["w → ¬d", "d → w", "d ∧ w"],
+        "explanation": "The phrase 'A unless B' is a conditional statement that means 'If not B, then A'. In this case, 'If you do not water it' (¬w), 'then the plant will die' (d)."
+      },
+      {
+        "definitions": { "s": "I study the course.", "p": "I will pass the course." },
+        "sentence": "If I do not study, then I will not pass the course.",
+        "correct": "¬s → ¬p",
+        "distractors": ["s → p", "¬p → ¬s", "¬s ∧ ¬p"],
+        "explanation": "This is a direct 'If... then...' conditional (→). The statement 'I do not study' is the antecedent (¬s), and 'I will not pass the course' is the consequent (¬p). This form is known as the inverse."
+      },
+      {
+        "definitions": { "s": "I study the course.", "p": "I will pass the course." },
+        "sentence": "I study the course but do not pass it.",
+        "correct": "s ∧ ¬p",
+        "distractors": ["s → ¬p", "s ∨ ¬p", "¬(s ∧ p)"],
+        "explanation": "The word 'but' functions logically as an 'and' (∧). It connects the two statements 'I study the course' (s) and 'I do not pass it' (¬p)."
+      }
+    ];
+
+    const shuffleArray = (array) => {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    };
+
+    function generateQuiz() {
+      questionsContainer.innerHTML = '';
+      const selectedQuestions = shuffleArray([...questionsPool]).slice(0, 5); // Reduced to 5 for clarity
+
+      selectedQuestions.forEach((q, i) => {
+        const options = shuffleArray([q.correct, ...q.distractors]);
+
+        const definitionsHtml = Object.entries(q.definitions)
+                .map(([key, value]) => `<div><strong>${key}:</strong> "${value}"</div>`)
+                .join('');
+
+        const optionsHtml = options.map(opt => `
+                <label>
+                    <input type="radio" name="q-${i}" value="${opt}">
+                    <code>${opt}</code>
+                </label>
+            `).join('');
+
+        const questionDiv = document.createElement('div');
+        questionDiv.className = 'question';
+        questionDiv.dataset.answer = q.correct;
+        questionDiv.innerHTML = `
+                <div class="question-header">
+                    <strong>Question ${i + 1}</strong>
+                    <span class="result-indicator"></span>
+                </div>
+                <div class="definitions">${definitionsHtml}</div>
+                <div class="english-sentence">"${q.sentence}"</div>
+                <div class="radio-group">${optionsHtml}</div>
+                <div class="explanation-text">${q.explanation}</div>
+            `;
+        questionsContainer.appendChild(questionDiv);
+      });
+    }
+
+    function checkAnswers() {
+      document.querySelectorAll('.question').forEach(q => {
+        const correctAnswer = q.dataset.answer;
+        const selectedRadio = q.querySelector('input[type="radio"]:checked');
+        const indicator = q.querySelector('.result-indicator');
+        const explanation = q.querySelector('.explanation-text');
+
+        // Show explanation for all questions
+        if(explanation) explanation.style.display = 'block';
+
+        if (selectedRadio && selectedRadio.value === correctAnswer) {
+          indicator.textContent = '✓';
+          indicator.className = 'result-indicator correct';
+        } else {
+          indicator.textContent = '✗';
+          indicator.className = 'result-indicator incorrect';
+
+          // Highlight the correct answer if the user was wrong
+          const correctRadio = q.querySelector(`input[value="${CSS.escape(correctAnswer)}"]`);
+          if(correctRadio) {
+            correctRadio.parentElement.classList.add('correct-answer-highlight');
+          }
+        }
+      });
+    }
+
+    // --- EVENT LISTENERS & INITIALIZATION ---
+    checkBtn.addEventListener('click', checkAnswers);
+    resetBtn.addEventListener('click', generateQuiz);
+    generateQuiz();
+  });
+</script>
+</body>
+</html>
