@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Function Definitions Quiz</title>
+  <style>
+    :root {
+      --bg-color: #f8f9fa;
+      --font-color: #212529;
+      --primary-color: #6f42c1; /* A nice purple for this topic */
+      --light-gray: #e9ecef;
+      --border-radius: 8px;
+      --correct-color: #198754;
+      --incorrect-color: #dc3545;
+      --card-bg: #ffffff;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--font-color);
+      line-height: 1.6;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .container {
+      max-width: 800px;
+      width: 100%;
+    }
+
+    h1 {
+      color: var(--primary-color);
+      text-align: center;
+      border-bottom: 2px solid var(--light-gray);
+      padding-bottom: 15px;
+    }
+
+    .question {
+      background-color: var(--card-bg);
+      padding: 20px;
+      margin-bottom: 20px;
+      border-radius: var(--border-radius);
+      box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+      border: 1px solid var(--light-gray);
+    }
+
+    .question-header {
+      margin-bottom: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: bold;
+    }
+
+    .question-text {
+      font-size: 1.1em;
+      margin-bottom: 15px;
+      background-color: #f6f3fa;
+      padding: 15px;
+      border-radius: 4px;
+    }
+
+    .radio-group label {
+      display: block;
+      margin-bottom: 8px;
+      cursor: pointer;
+      padding: 8px 12px;
+      border-radius: 4px;
+      transition: background-color 0.2s, border-color 0.2s;
+      border: 1px solid #eee;
+    }
+
+    .radio-group label:hover {
+      background-color: #f5f5f5;
+      border-color: #ccc;
+    }
+
+    .correct-answer-highlight {
+      background-color: #e8f5e9;
+      border-color: var(--correct-color) !important;
+    }
+
+    .result-indicator {
+      font-size: 1.5em;
+      font-weight: bold;
+    }
+    .correct { color: var(--correct-color); }
+    .incorrect { color: var(--incorrect-color); }
+
+    .explanation-text {
+      display: none;
+      margin-top: 15px;
+      padding: 12px;
+      background-color: #f1f1f1;
+      border-left: 4px solid #6c757d;
+      border-radius: 4px;
+      font-size: 0.95em;
+    }
+
+    /* Diagram Styles */
+    .diagram-container {
+      position: relative;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: 20px 0;
+      margin-bottom: 15px;
+      min-height: 150px;
+    }
+    .diagram-set {
+      border: 2px solid var(--primary-color);
+      border-radius: var(--border-radius);
+      padding: 10px;
+      min-width: 80px;
+      text-align: center;
+      background-color: #fff;
+    }
+    .set-label {
+      font-weight: bold;
+      margin-bottom: 10px;
+      color: var(--primary-color);
+    }
+    .set-element {
+      background-color: #f6f3fa;
+      border: 1px solid #dcd1f3;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      line-height: 30px;
+      margin: 10px auto;
+      font-weight: bold;
+    }
+    .diagram-svg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none; /* Allows clicking through the SVG to the elements below */
+    }
+    .diagram-svg line {
+      stroke: #333;
+      stroke-width: 2;
+      marker-end: url(#arrowhead);
+    }
+
+    .controls {
+      text-align: center;
+      padding: 20px;
+    }
+    button {
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      padding: 12px 25px;
+      font-size: 1em;
+      border-radius: var(--border-radius);
+      cursor: pointer;
+      transition: background-color 0.2s;
+      margin: 0 10px;
+    }
+    button:hover {
+      background-color: #5a35a2;
+    }
+
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>Function Definitions Quiz</h1>
+  <div id="questions-container"></div>
+  <div class="controls">
+    <button id="check-btn">Check Answers</button>
+    <button id="reset-btn">New Quiz</button>
+  </div>
+</div>
+
+<svg width="0" height="0" style="position:absolute;">
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#333" />
+    </marker>
+  </defs>
+</svg>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const questionsContainer = document.getElementById('questions-container');
+    const checkBtn = document.getElementById('check-btn');
+    const resetBtn = document.getElementById('reset-btn');
+
+    const questionsPool = [
+      // --- Definition Questions ---
+      {
+        type: 'definition',
+        text: 'For a relation from set A to set B, what is it called if at least one element in A maps to <b>more than one</b> element in B?',
+        correct: 'Not a Function (Relation only)',
+        distractors: ['Partial Function', 'Total Function', 'Injective Function'],
+        explanation: 'A relation fails to be even a partial function if any input maps to multiple outputs. This violates the core principle of functions.'
+      },
+      {
+        type: 'definition',
+        text: 'For a relation from set A to set B, what is it called if every element in A maps to <b>at most one</b> element in B, but at least one element in A maps to nothing?',
+        correct: 'A Partial Function (but not Total)',
+        distractors: ['Total Function', 'Not a Function', 'Surjective Function'],
+        explanation: 'In a partial function, it\'s okay for some inputs in the domain to be unmapped. In a total function, every input must be mapped.'
+      },
+      {
+        type: 'definition',
+        text: 'For a function from set A to set B, what property does it have if every element in the codomain (B) is mapped to by <b>at least one</b> element from the domain (A)?',
+        correct: 'Surjective (Onto)',
+        distractors: ['Injective', 'Bijective', 'Partial Function'],
+        explanation: 'A surjective function "covers" its entire codomain. The range is equal to the codomain.'
+      },
+      {
+        type: 'definition',
+        text: 'For a function from set A to set B, what property does it have if every element in the domain (A) maps to a <b>unique</b> element in the codomain (B)? (i.e., no two inputs map to the same output)',
+        correct: 'Injective (One-to-One)',
+        distractors: ['Surjective', 'Bijective', 'Total Function'],
+        explanation: 'An injective function never maps distinct inputs to the same output. It is "one-to-one".'
+      },
+      {
+        type: 'definition',
+        text: 'A function that is both injective and surjective is called...?',
+        correct: 'Bijective',
+        distractors: ['Partial', 'Total', 'A Relation'],
+        explanation: 'A bijective function creates a perfect one-to-one correspondence between the elements of the domain and the codomain.'
+      },
+      // --- Cardinality & Property Questions ---
+      {
+        type: 'definition',
+        text: 'For a function ƒ: A → B to be <b>injective</b>, what must be true about the cardinalities of A and B?',
+        correct: '|A| ≤ |B|',
+        distractors: ['|A| ≥ |B|', '|A| = |B|', '|A| > |B|'],
+        explanation: 'To be injective, you can\'t have more inputs than outputs, otherwise the Pigeonhole Principle forces at least two inputs to map to the same output.'
+      },
+      {
+        type: 'definition',
+        text: 'For a function ƒ: A → B to be <b>surjective</b>, what must be true about the cardinalities of A and B?',
+        correct: '|A| ≥ |B|',
+        distractors: ['|A| ≤ |B|', '|A| = |B|', '|A| < |B|'],
+        explanation: 'To be surjective, you must have at least as many inputs as outputs to ensure every output can be "covered".'
+      },
+      {
+        type: 'definition',
+        text: 'A function is guaranteed to have an inverse function if and only if it is...?',
+        correct: 'Bijective',
+        distractors: ['Injective', 'Surjective', 'A Total Function'],
+        explanation: 'Only a bijective function has the one-to-one correspondence needed to define a unique inverse mapping for every element.'
+      },
+
+      // --- Diagram Questions ---
+      {
+        type: 'diagram',
+        questionText: 'Given the mapping from A to B, how would you classify this relation?',
+        a: [1, 2, 3], b: ['x', 'y'], mapping: [[1, 'x'], [2, 'x'], [2, 'y']],
+        correct: 'Not a Function (Relation only)',
+        distractors: ['A Partial Function (but not Total)', 'A Total Function', 'A Bijective Function'],
+        explanation: 'This is not a function because the input `2` maps to two different outputs (`x` and `y`).'
+      },
+      {
+        type: 'diagram',
+        questionText: 'Given the mapping from A to B, how would you classify this relation?',
+        a: [1, 2, 3], b: ['x', 'y', 'z'], mapping: [[1, 'y'], [3, 'z']],
+        correct: 'A Partial Function (but not Total)',
+        distractors: ['A Total Function', 'Not a Function (Relation only)', 'A Surjective Function'],
+        explanation: 'This is a partial function because an element in the domain (`2`) is not mapped to any output. It\'s not a total function.'
+      },
+      {
+        type: 'diagram',
+        questionText: 'The function ƒ: A → B shown is:',
+        a: [1, 2, 3], b: ['x', 'y'], mapping: [[1, 'x'], [2, 'y'], [3, 'x']],
+        correct: 'Surjective, but not Injective',
+        distractors: ['Injective, but not Surjective', 'Bijective (Injective and Surjective)', 'Neither Injective nor Surjective'],
+        explanation: 'It is <b>surjective</b> because every element in B (`x`, `y`) is used. It is <b>not injective</b> because two inputs (`1` and `3`) map to the same output (`x`).'
+      },
+      {
+        type: 'diagram',
+        questionText: 'The function ƒ: A → B shown is:',
+        a: [1, 2], b: ['x', 'y', 'z'], mapping: [[1, 'x'], [2, 'z']],
+        correct: 'Injective, but not Surjective',
+        distractors: ['Surjective, but not Injective', 'Bijective (Injective and Surjective)', 'Neither Injective nor Surjective'],
+        explanation: 'It is <b>injective</b> because different inputs (`1`, `2`) map to different outputs (`x`, `z`). It is <b>not surjective</b> because an element in B (`y`) is not used.'
+      },
+      {
+        type: 'diagram',
+        questionText: 'The function ƒ: A → B shown is:',
+        a: [1, 2, 3], b: ['x', 'y', 'z'], mapping: [[1, 'y'], [2, 'x'], [3, 'z']],
+        correct: 'Bijective (Injective and Surjective)',
+        distractors: ['Injective, but not Surjective', 'Surjective, but not Injective', 'Neither Injective nor Surjective'],
+        explanation: 'It is <b>injective</b> (all inputs go to unique outputs) AND <b>surjective</b> (all outputs are used). Therefore, it is bijective.'
+      },
+      {
+        type: 'diagram',
+        questionText: 'The function ƒ: A → B shown is:',
+        a: [1, 2, 3], b: ['x', 'y', 'z'], mapping: [[1, 'x'], [2, 'x'], [3, 'y']],
+        correct: 'Neither Injective nor Surjective',
+        distractors: ['Injective, but not Surjective', 'Surjective, but not Injective', 'Bijective (Injective and Surjective)'],
+        explanation: 'It is <b>not injective</b> because inputs `1` and `2` both map to `x`. It is <b>not surjective</b> because the output `z` is never used.'
+      },
+
+    ];
+
+    const shuffleArray = (array) => { for (let i = array.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1));[array[i], array[j]] = [array[j], array[i]]; } return array; };
+
+
+    function generateQuiz() {
+      questionsContainer.innerHTML = '';
+      const selectedQuestions = shuffleArray([...questionsPool]).slice(0, 8);
+
+      selectedQuestions.forEach((q, i) => {
+        const questionDiv = document.createElement('div');
+        questionDiv.className = 'question';
+        questionDiv.dataset.answer = q.correct;
+
+        let contentHtml = '';
+        const options = shuffleArray([q.correct, ...q.distractors]);
+        const optionsHtml = options.map(opt => `<label><input type="radio" name="q-${i}" value="${opt}"> ${opt}</label>`).join('');
+
+        if (q.type === 'definition') {
+          contentHtml = `<div class="question-text">${q.text}</div>`;
+        } else if (q.type === 'diagram') {
+          const setAHtml = q.a.map(el => `<div class="set-element" id="el-a-${i}-${el}">${el}</div>`).join('');
+          const setBHtml = q.b.map(el => `<div class="set-element" id="el-b-${i}-${el}">${el}</div>`).join('');
+          contentHtml = `
+                    <div class="question-text">${q.questionText}</div>
+                    <div class="diagram-container" id="diagram-${i}">
+                        <div class="diagram-set"><div class="set-label">Domain (A)</div>${setAHtml}</div>
+                        <svg class="diagram-svg"></svg>
+                        <div class="diagram-set"><div class="set-label">Codomain (B)</div>${setBHtml}</div>
+                    </div>
+                `;
+        }
+
+        questionDiv.innerHTML = `
+                <div class="question-header">
+                    <span>Question ${i + 1}</span>
+                    <span class="result-indicator"></span>
+                </div>
+                ${contentHtml}
+                <div class="radio-group">${optionsHtml}</div>
+                <div class="explanation-text">${q.explanation}</div>
+            `;
+        questionsContainer.appendChild(questionDiv);
+
+        // If it's a diagram, draw the lines after rendering
+        if (q.type === 'diagram') {
+          drawDiagramLines(q, i);
+        }
+      });
+    }
+
+    function drawDiagramLines(question, questionIndex) {
+      const svg = document.querySelector(`#diagram-${questionIndex} .diagram-svg`);
+      const containerRect = svg.parentElement.getBoundingClientRect();
+
+      question.mapping.forEach(([from, to]) => {
+        const startEl = document.getElementById(`el-a-${questionIndex}-${from}`);
+        const endEl = document.getElementById(`el-b-${questionIndex}-${to}`);
+
+        if (startEl && endEl) {
+          const startRect = startEl.getBoundingClientRect();
+          const endRect = endEl.getBoundingClientRect();
+
+          const x1 = startRect.right - containerRect.left;
+          const y1 = startRect.top + startRect.height / 2 - containerRect.top;
+          const x2 = endRect.left - containerRect.left;
+          const y2 = endRect.top + endRect.height / 2 - containerRect.top;
+
+          const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+          line.setAttribute('x1', x1);
+          line.setAttribute('y1', y1);
+          line.setAttribute('x2', x2 - 10); // Subtract to not overlap arrowhead
+          line.setAttribute('y2', y2);
+          svg.appendChild(line);
+        }
+      });
+    }
+
+    function checkAnswers() {
+      document.querySelectorAll('.question').forEach(q => {
+        const correctAnswer = q.dataset.answer;
+        const selectedRadio = q.querySelector('input[type="radio"]:checked');
+        const indicator = q.querySelector('.result-indicator');
+        const explanation = q.querySelector('.explanation-text');
+        if(explanation) explanation.style.display = 'block';
+        if (selectedRadio && selectedRadio.value === correctAnswer) {
+          indicator.textContent = '✓';
+          indicator.className = 'result-indicator correct';
+        } else {
+          indicator.textContent = '✗';
+          indicator.className = 'result-indicator incorrect';
+          const correctRadio = q.querySelector(`input[value="${CSS.escape(correctAnswer)}"]`);
+          if(correctRadio) correctRadio.parentElement.classList.add('correct-answer-highlight');
+        }
+      });
+    }
+
+    checkBtn.addEventListener('click', checkAnswers);
+    resetBtn.addEventListener('click', generateQuiz);
+    generateQuiz();
+  });
+</script>
+</body>
+</html>
