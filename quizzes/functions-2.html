@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Function Analysis Quiz</title>
+    <style>
+        :root {
+            --bg-color: #f0f2f5;
+            --font-color: #212529;
+            --primary-color: #007bff;
+            --light-gray: #e9ecef;
+            --border-radius: 8px;
+            --correct-color: #198754;
+            --incorrect-color: #dc3545;
+            --card-bg: #ffffff;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--font-color);
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            text-align: center;
+            border-bottom: 2px solid var(--light-gray);
+            padding-bottom: 15px;
+        }
+
+        .question {
+            background-color: var(--card-bg);
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+            border: 1px solid var(--light-gray);
+        }
+
+        .question-header {
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+        }
+
+        .definition-display {
+            font-family: "SF Mono", "Consolas", "Menlo", monospace;
+            font-size: 1em;
+            background-color: #e9f2ff;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .radio-group label {
+            display: block;
+            margin-bottom: 8px;
+            cursor: pointer;
+            padding: 8px 12px;
+            border-radius: 4px;
+            transition: background-color 0.2s, border-color 0.2s;
+            border: 1px solid #eee;
+        }
+
+        .radio-group label:hover {
+            background-color: #f5f5f5;
+            border-color: #ccc;
+        }
+
+        .correct-answer-highlight {
+            background-color: #e8f5e9;
+            border-color: var(--correct-color) !important;
+        }
+
+        .result-indicator {
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+        .correct { color: var(--correct-color); }
+        .incorrect { color: var(--incorrect-color); }
+
+        .explanation-text {
+            display: none;
+            margin-top: 15px;
+            padding: 12px;
+            background-color: #f1f1f1;
+            border-left: 4px solid #6c757d;
+            border-radius: 4px;
+            font-size: 0.95em;
+        }
+
+        .info-box {
+            font-size: 0.95em;
+            background-color: #e9f2ff;
+            padding: 15px;
+            border-radius: var(--border-radius);
+            margin-bottom: 20px;
+            border-left: 5px solid var(--primary-color);
+        }
+
+        .controls {
+            text-align: center;
+            padding: 20px;
+        }
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 1em;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: background-color 0.2s;
+            margin: 0 10px;
+        }
+        button:hover {
+            background-color: #0069d9;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Relation and Function Analysis Quiz</h1>
+    <div class="info-box">
+        <strong>Note:</strong>
+        <ul>
+            <li><b>ℤ</b> = Set of all Integers (...-2, -1, 0, 1, 2...)</li>
+            <li><b>ℕ</b> = Set of Natural Numbers (1, 2, 3...)</li>
+            <li><b>ℝ</b> = Set of all Real Numbers</li>
+        </ul>
+    </div>
+    <div id="questions-container"></div>
+    <div class="controls">
+        <button id="check-btn">Check Answers</button>
+        <button id="reset-btn">New Quiz</button>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const questionsContainer = document.getElementById('questions-container');
+        const checkBtn = document.getElementById('check-btn');
+        const resetBtn = document.getElementById('reset-btn');
+
+        const questionsPool = [
+            // Relation Questions
+            {
+                definition: 'Let R be a relation from ℝ to ℝ defined as R = {(x, y) : y² = x}.',
+                correct: 'Not a partial function',
+                distractors: ['A partial function', 'A function'],
+                explanation: 'This is not a function because for any positive x, there are two outputs (y = √x and y = -√x). For example, if x=9, y can be 3 or -3. This violates the definition of a function.'
+            },
+            {
+                definition: "Let R be a relation from ℝ to ℝ defined as R = {(x, y) : y > x}.",
+                correct: 'Not a partial function',
+                distractors: ['A partial function', 'A function'],
+                explanation: "This is not a partial function because a single input `x` can map to infinitely many outputs `y`. For example, if x=2, y could be 3, 4, 5.1, and so on."
+            },
+            {
+                definition: "Let R be a relation from ℤ to ℤ where (x, y) ∈ R if x divides y.",
+                correct: 'Not a partial function',
+                distractors: ['A partial function', 'A function'],
+                explanation: "This is not a partial function because one input can relate to many outputs. For example, the input x=3 relates to y=3, y=6, y=9, etc."
+            },
+            {
+                definition: "Let R be a relation from ℝ to ℝ defined as R = {(x, y) : y = x² - 3x + 2}.",
+                correct: 'A function',
+                distractors: ['A partial function', 'Not a partial function'],
+                explanation: "This is a total function. For every real number `x` in the domain, the polynomial expression produces exactly one unique real number `y`."
+            },
+            {
+                definition: "Let R be a relation from ℤ to ℤ defined as R = {(x, y) : x² = y²}.",
+                correct: 'Not a partial function',
+                distractors: ['A partial function', 'A function'],
+                explanation: "This is not a partial function. For any non-zero input `x`, there are two possible outputs. For example, if x=5, y can be 5 or -5."
+            },
+            {
+                definition: 'Let R be a relation from ℤ to ℝ defined as R = {(x, y) : y = 1 / (x - 5)}.',
+                correct: 'A partial function',
+                distractors: ['A function', 'Not a partial function'],
+                explanation: 'This is not a total function because the domain is all integers (ℤ), but the relation is undefined for the integer x=5. Since every other integer maps to exactly one output, it is a partial function.'
+            },
+            {
+                definition: "Let R be a relation from ℤ×ℤ to ℤ defined as R = {((a, b), c) : c = a + b}.",
+                correct: 'A function',
+                distractors: ['A partial function', 'Not a partial function'],
+                explanation: 'This is a total function. The domain is the set of all pairs of integers. For any given pair `(a, b)`, their sum `c` is a unique, single integer. Every element in the domain has exactly one output.'
+            },
+            // Function Questions
+            {
+                definition: 'Let ƒ: ℝ → ℝ be a function defined by ƒ(x) = x³.',
+                correct: 'f is 1-to-1 and onto',
+                distractors: ['f is 1-to-1, but not onto', 'f is onto, but not 1-to-1', 'f is neither 1-to-1 nor onto'],
+                explanation: '<b>Injective (1-to-1):</b> If a³ = b³, then a must equal b. A negative number cubed is negative, positive is positive. <br><b>Onto (surjective):</b> For any real number y in the codomain, we can choose x = ³√y in the domain to map to it.'
+            },
+            {
+                definition: 'Let ƒ: ℤ → ℤ be a function defined by ƒ(x) = |x|.',
+                correct: 'f is neither 1-to-1 nor onto',
+                distractors: ['f is 1-to-1, but not onto', 'f is onto, but not 1-to-1', 'f is 1-to-1 and onto'],
+                explanation: '<b>Not 1-to-1 (Not Injective):</b> ƒ(-3) = 3 and ƒ(3) = 3. <br><b>Not Onto (Surjective):</b> The range is only non-negative integers. No negative integers in the codomain are mapped to.'
+            },
+
+            {
+                definition: 'Let ƒ: ℕ → ℕ be a function defined by ƒ(x) = 1.',
+                correct: 'f is neither 1-to-1 nor onto',
+                distractors: ['f is 1-to-1, but not onto', 'f is onto, but not 1-to-1', 'f is 1-to-1 and onto'],
+                explanation: 'This is a constant function. <br><b>Not 1-to-1 (Not Injective):</b> ƒ(1)=1, ƒ(2)=1, etc. All inputs map to the same output. <br><b>Not Onto (Surjective):</b> Only the value 1 in the codomain ℕ is ever mapped to.'
+            },
+            {
+                definition: 'Let ƒ: ℝ → ℝ be a function defined by ƒ(x) = 2x.',
+                correct: 'f is 1-to-1 and onto',
+                distractors: ['f is 1-to-1, but not onto', 'f is onto, but not 1-to-1', 'f is neither 1-to-1 nor onto'],
+                explanation: '<b>Injective (1-to-1):</b> If 2a = 2b, then a = b. <br><b>Onto (surjective):</b> For any real number y in the codomain, we can choose x = y/2 in the domain to map to it.'
+            },
+            {
+                definition: 'Let ƒ: ℝ → ℤ be a function defined by ƒ(x) = ⌈x⌉ (the ceiling function).',
+                correct: 'f is onto, but not 1-to-1',
+                distractors: ['f is 1-to-1, but not onto', 'f is 1-to-1 and onto', 'f is neither 1-to-1 nor onto'],
+                explanation: '<b>Not 1-to-1 (Not Injective):</b> ƒ(1.1) = 2 and ƒ(1.8) = 2. Different inputs map to the same output.<br><b>Onto (surjective):</b> For any integer y in the codomain, we can choose a real number x (e.g., x = y) that maps to it.'
+            },
+            {
+                definition: 'Let ƒ: ℤ → ℤ be a function defined by ƒ(x) = x - 10.',
+                correct: 'f is 1-to-1 and onto',
+                distractors: ['f is 1-to-1, but not onto', 'f is onto, but not 1-to-1', 'f is neither 1-to-1 nor onto'],
+                explanation: '<b>Injective (1-to-1):</b> If a - 10 = b - 10, then a = b.<br><b>Onto (surjective):</b> For any integer y in the codomain, we can choose an integer x = y + 10 in the domain to map to it.'
+            },
+            {
+                definition: 'Let ƒ: ℝ → ℝ be a function defined by ƒ(x) = x² - 2.',
+                correct: 'f is neither 1-to-1 nor onto',
+                distractors: ['f is 1-to-1, but not onto', 'f is onto, but not 1-to-1', 'f is 1-to-1 and onto'],
+                explanation: '<b>Not 1-to-1 (Not Injective):</b> ƒ(-1) = -1 and ƒ(1) = -1.<br><b>Not Onto (Surjective):</b> The range of the function is [-2, ∞). No value less than -2 in the codomain is ever mapped to.'
+            },
+            {
+                definition: 'Let ƒ: ℕ → ℤ be a function defined by ƒ(x) = -x.',
+                correct: 'f is 1-to-1, but not onto',
+                distractors: ['f is 1-to-1 and onto', 'f is onto, but not 1-to-1', 'f is neither 1-to-1 nor onto'],
+                explanation: '<b>Injective (1-to-1):</b> If -a = -b, then a = b. Different natural numbers map to different negative integers.<br><b>Not Onto (Surjective):</b> The range is only the negative integers. No positive integers or zero in the codomain ℤ are ever mapped to.'
+            },
+            {
+                definition: 'Let ƒ: ℤ → ℤ be a function defined by ƒ(x) = 2x + 1.',
+                correct: 'f is 1-to-1, but not onto',
+                distractors: ['f is 1-to-1 and onto', 'f is onto, but not 1-to-1', 'f is neither 1-to-1 nor onto'],
+                explanation: '<b>Injective (1-to-1):</b> If 2a + 1 = 2b + 1, then 2a = 2b, so a = b.<br><b>Not Onto (Surjective):</b> This function only ever produces odd numbers. No even numbers in the codomain ℤ are ever mapped to.'
+            },
+            {
+                definition: 'Let ƒ: ℝ → ℝ be a function defined by ƒ(x) = sin(x).',
+                correct: 'f is neither 1-to-1 nor onto',
+                distractors: ['f is 1-to-1, but not onto', 'f is onto, but not 1-to-1', 'f is 1-to-1 and onto'],
+                explanation: '<b>Not 1-to-1 (Not Injective):</b> The function is periodic, so ƒ(0) = 0 and ƒ(2π) = 0.<br><b>Not Onto (Surjective):</b> The range of sin(x) is [-1, 1]. No values greater than 1 or less than -1 in the codomain ℝ are ever mapped to.'
+            }
+        ];
+
+        const shuffleArray = (array) => { for (let i = array.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [array[i], array[j]] = [array[j], array[i]]; } return array; };
+
+        function generateQuiz() {
+            questionsContainer.innerHTML = '';
+            const selectedQuestions = shuffleArray([...questionsPool]).slice(0, 5);
+
+            selectedQuestions.forEach((q, i) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.className = 'question';
+                questionDiv.dataset.answer = q.correct;
+
+                const options = shuffleArray([q.correct, ...q.distractors]);
+                const optionsHtml = options.map(opt => `<label><input type="radio" name="q-${i}" value="${opt}"> ${opt}</label>`).join('');
+
+                questionDiv.innerHTML = `
+                <div class="question-header">
+                    <span>Question ${i + 1}</span>
+                    <span class="result-indicator"></span>
+                </div>
+                <div class="definition-display">${q.definition}</div>
+                <div class="radio-group">${optionsHtml}</div>
+                <div class="explanation-text">${q.explanation}</div>
+            `;
+                questionsContainer.appendChild(questionDiv);
+            });
+        }
+
+        function checkAnswers() {
+            document.querySelectorAll('.question').forEach(q => {
+                const correctAnswer = q.dataset.answer;
+                const selectedRadio = q.querySelector('input[type="radio"]:checked');
+                const indicator = q.querySelector('.result-indicator');
+                const explanation = q.querySelector('.explanation-text');
+
+                if(explanation) explanation.style.display = 'block';
+
+                if (selectedRadio && selectedRadio.value === correctAnswer) {
+                    indicator.textContent = '✓';
+                    indicator.className = 'result-indicator correct';
+                } else {
+                    indicator.textContent = '✗';
+                    indicator.className = 'result-indicator incorrect';
+
+                    const correctRadio = q.querySelector(`input[value="${CSS.escape(correctAnswer)}"]`);
+                    if(correctRadio) {
+                        correctRadio.parentElement.classList.add('correct-answer-highlight');
+                    }
+                }
+            });
+        }
+
+        checkBtn.addEventListener('click', checkAnswers);
+        resetBtn.addEventListener('click', generateQuiz);
+        generateQuiz();
+    });
+</script>
+</body>
+</html>
