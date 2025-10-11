@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>First-Order Logic Quiz</title>
+  <style>
+    :root {
+      --bg-color: #f4f6f9;
+      --font-color: #212529;
+      --primary-color: #343a40;
+      --secondary-color: #007bff;
+      --light-gray: #e9ecef;
+      --border-radius: 8px;
+      --correct-color: #198754;
+      --incorrect-color: #dc3545;
+      --card-bg: #ffffff;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--font-color);
+      line-height: 1.6;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .container {
+      max-width: 800px;
+      width: 100%;
+    }
+
+    h1 {
+      color: var(--primary-color);
+      text-align: center;
+      border-bottom: 2px solid var(--light-gray);
+      padding-bottom: 15px;
+    }
+
+    .question {
+      background-color: var(--card-bg);
+      padding: 20px;
+      margin-bottom: 20px;
+      border-radius: var(--border-radius);
+      box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+      border: 1px solid var(--light-gray);
+    }
+
+    .question-header {
+      margin-bottom: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: bold;
+    }
+
+    .question-text {
+      font-size: 1.1em;
+      margin-bottom: 15px;
+    }
+
+    .radio-group label {
+      display: block;
+      margin-bottom: 8px;
+      cursor: pointer;
+      padding: 8px 12px;
+      border-radius: 4px;
+      transition: background-color 0.2s, border-color 0.2s;
+      border: 1px solid #eee;
+    }
+
+    .radio-group label:hover {
+      background-color: #f5f5f5;
+      border-color: #ccc;
+    }
+
+    .radio-group code {
+      font-size: 1.1em;
+      background-color: #e9ecef;
+      padding: 2px 6px;
+      border-radius: 3px;
+      color: #495057;
+    }
+
+    .correct-answer-highlight {
+      background-color: #e8f5e9;
+      border-color: var(--correct-color) !important;
+    }
+
+    .result-indicator {
+      font-size: 1.5em;
+      font-weight: bold;
+    }
+    .correct { color: var(--correct-color); }
+    .incorrect { color: var(--incorrect-color); }
+
+    .explanation-text {
+      display: none;
+      margin-top: 15px;
+      padding: 12px;
+      background-color: #f1f1f1;
+      border-left: 4px solid #6c757d;
+      border-radius: 4px;
+      font-size: 0.95em;
+    }
+
+    .info-box {
+      font-size: 1em;
+      background-color: #e9ecef;
+      padding: 20px;
+      border-radius: var(--border-radius);
+      margin-bottom: 20px;
+      border-left: 5px solid var(--secondary-color);
+    }
+
+    .info-box code {
+      font-family: "SF Mono", "Consolas", "Menlo", monospace;
+      background-color: #d1d9e2;
+      padding: 3px 6px;
+      border-radius: 4px;
+    }
+
+    .controls {
+      text-align: center;
+      padding: 20px;
+    }
+    button {
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      padding: 12px 25px;
+      font-size: 1em;
+      border-radius: var(--border-radius);
+      cursor: pointer;
+      transition: background-color 0.2s;
+      margin: 0 10px;
+    }
+    button:hover {
+      background-color: #23272b;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>First-Order Logic Quiz</h1>
+  <div class="info-box">
+    <strong>Predicates Used:</strong>
+    <ul>
+      <li><code>Take(x, y)</code> = "student x takes the course y"</li>
+      <li><code>Pass(x, y)</code> = "student x passes the course y"</li>
+      <li><code>Lazy(x)</code> = "x is lazy"</li>
+      <li><code>Smart(x)</code> = "x is smart"</li>
+    </ul>
+  </div>
+  <div id="questions-container"></div>
+  <div class="controls">
+    <button id="check-btn">Check Answers</button>
+    <button id="reset-btn">New Quiz</button>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const questionsContainer = document.getElementById('questions-container');
+    const checkBtn = document.getElementById('check-btn');
+    const resetBtn = document.getElementById('reset-btn');
+
+    const questionsPool = [
+      {
+        question: "Which formula represents: 'All students take the courses Programming and Math.'?",
+        options: [
+          "∀x (Take(x, Programming) ∧ Take(x, Math))",
+          "∃x (Take(x, Programming) ∧ Take(x, Math))",
+          "∀x (Take(x, Programming) ∨ Take(x, Math))",
+          "∀x ∀y (Take(x, y))"
+        ],
+        correctAnswer: "∀x (Take(x, Programming) ∧ Take(x, Math))",
+        explanation: "This formula correctly states that for every student x, x takes Programming AND x takes Math."
+      },
+      {
+        question: "Which sentence best translates the formula: '∃x (Lazy(x) ∧ ¬Smart(x))'?",
+        options: [
+          "All students are lazy and not smart.",
+          "Some lazy students are smart.",
+          "There exists a student who is lazy and not smart.",
+          "If a student is lazy, then they are not smart."
+        ],
+        correctAnswer: "There exists a student who is lazy and not smart.",
+        explanation: "This translation accurately reflects the existential quantifier ('There exists') and the conjunction of being lazy and not smart."
+      },
+      {
+        question: "Which formula represents: 'No lazy student passes the Math course.'?",
+        options: [
+          "∀x (Lazy(x) → ¬Pass(x, Math))",
+          "∃x (Lazy(x) ∧ ¬Pass(x, Math))",
+          "¬∃x (Lazy(x) → Pass(x, Math))",
+          "∀x (Lazy(x) ∧ ¬Pass(x, Math))"
+        ],
+        correctAnswer: "∀x (Lazy(x) → ¬Pass(x, Math))",
+        explanation: "This correctly states that for any student x, IF they are lazy, THEN they do not pass Math. The phrase 'No A is B' is often translated this way."
+      },
+      {
+        question: "Which sentence best translates the formula: '∀x (Smart(x) → Pass(x, Logic))'?",
+        options: [
+          "Some smart students pass the Logic course.",
+          "All students are smart and pass the Logic course.",
+          "Every smart student passes the Logic course.",
+          "A student passes the Logic course if and only if they are smart."
+        ],
+        correctAnswer: "Every smart student passes the Logic course.",
+        explanation: "This is a natural and accurate translation of the conditional statement under a universal quantifier."
+      },
+      {
+        question: "Which formula represents: 'There is a student who takes the Art course, but does not pass it.'?",
+        options: [
+          "∃x (Take(x, Art) ∧ ¬Pass(x, Art))",
+          "∃x (Take(x, Art) → ¬Pass(x, Art))",
+          "∀x (Take(x, Art) → ¬Pass(x, Art))",
+          "∃x (¬Take(x, Art) ∧ Pass(x, Art))"
+        ],
+        correctAnswer: "∃x (Take(x, Art) ∧ ¬Pass(x, Art))",
+        explanation: "This correctly uses an existential quantifier for 'There is' and a conjunction for 'but' to link taking the course and not passing it."
+      },
+      {
+        question: "Which sentence best translates the formula: '¬∃x (Lazy(x))'?",
+        options: [
+          "Some students are not lazy.",
+          "No students are lazy.",
+          "All students are not lazy.",
+          "It is not the case that all students are lazy."
+        ],
+        correctAnswer: "No students are lazy.",
+        explanation: "This is the most direct translation. It states that it is not the case that 'there exists' a lazy student, in plain English this is 'No students are lazy'. This is logically equivalent to 'All students are not lazy'."
+      },
+      {
+        question: "Which formula represents: 'If a student is smart, they pass every course they take.'?",
+        options: [
+          "∀x (Smart(x) → ∀y (Take(x, y) → Pass(x, y)))",
+          "∀x ∀y (Smart(x) ∧ Take(x, y) → Pass(x, y))",
+          "∃x (Smart(x) ∧ ∀y (Take(x, y) → Pass(x, y)))",
+          "∀x (Smart(x) → (Take(x, y) ∧ Pass(x, y)))"
+        ],
+        correctAnswer: "∀x (Smart(x) → ∀y (Take(x, y) → Pass(x, y)))",
+        explanation: "This correctly captures the nested logic: For any student x, IF they are smart, THEN for any course y, IF they take it, THEN they pass it."
+      },
+      {
+        question: "Which sentence best translates '∃y ∀x (Take(x, y))'?",
+        options: [
+          "Every student takes at least one course.",
+          "There is a course that is taken by all students.",
+          "Some students take all courses.",
+          "Every course is taken by at least one student."
+        ],
+        correctAnswer: "There is a course that is taken by all students.",
+        explanation: "This correctly reflects the order of quantifiers: 'There exists a course y' such that 'for all students x', x takes y. The order of quantifiers is crucial."
+      },
+      {
+        question: "Which formula represents: 'Some smart students do not take any courses.'?",
+        options: [
+          "∃x (Smart(x) ∧ ∀y (¬Take(x, y)))",
+          "∃x (Smart(x) → ∀y (¬Take(x, y)))",
+          "∀x (Smart(x) → ¬∃y (Take(x, y)))",
+          "∃x (Smart(x) ∧ ¬∃y (Take(x, y)))"
+        ],
+        correctAnswer: "∃x (Smart(x) ∧ ∀y (¬Take(x, y)))",
+        explanation: "'Some' points to ∃. 'Do not take any' can be rephrased as 'for all courses y, they do not take that course'. The last option is also logically equivalent."
+      },
+      {
+        question: "Which sentence best translates '∀y ((∃x Take(x, y)) → (∃z Pass(z, y)))'?",
+        options: [
+          "If a student takes a course, then that student passes it.",
+          "For every course, if at least one student takes it, then at least one student passes it.",
+          "Every course is taken by a student who passes it.",
+          "Some students take and pass a course."
+        ],
+        correctAnswer: "For every course, if at least one student takes it, then at least one student passes it.",
+        explanation: "This is a direct reading of the formula. The universal quantifier '∀y' applies to the whole statement. The 'if' part is '∃x Take(x, y)' and the 'then' part is '∃z Pass(z, y)'. Note that z could be a different student from x."
+      },
+      {
+        question: "Which formula represents: 'Every student is either smart or lazy.'?",
+        options: [
+          "∀x (Smart(x) ∨ Lazy(x))",
+          "∀x (Smart(x) ∧ Lazy(x))",
+          "∃x (Smart(x) ∨ Lazy(x))",
+          "∀x (Smart(x) → Lazy(x))"
+        ],
+        correctAnswer: "∀x (Smart(x) ∨ Lazy(x))",
+        explanation: "The universal quantifier '∀' captures 'Every student', and the disjunction '∨' correctly represents the 'either/or' condition."
+      },
+      {
+        question: "Which sentence best translates '∀x ∃y (Take(x, y))'?",
+        options: [
+          "There is a course that all students take.",
+          "Every student takes every course.",
+          "Every student takes at least one course.",
+          "Some students take some courses."
+        ],
+        correctAnswer: "Every student takes at least one course.",
+        explanation: "Reading from left to right: 'For every student x', 'there exists at least one course y' such that 'x takes y'. The order of quantifiers is crucial."
+      },
+      {
+        question: "Which formula represents: 'There is a course that no lazy student takes.'?",
+        options: [
+          "∃y ∀x (Lazy(x) → ¬Take(x, y))",
+          "∃y ∃x (Lazy(x) ∧ ¬Take(x, y))",
+          "∀y ∃x (Lazy(x) ∧ ¬Take(x, y))",
+          "¬∃y ∀x (Lazy(x) ∧ Take(x, y))"
+        ],
+        correctAnswer: "∃y ∀x (Lazy(x) → ¬Take(x, y))",
+        explanation: "'There is a course y' (∃y) such that 'for all students x', 'if x is lazy, then x does not take y'."
+      },
+      {
+        question: "Which sentence best translates '¬∀x (Smart(x))'?",
+        options: [
+          "No students are smart.",
+          "All students are not smart.",
+          "Not all students are smart.",
+          "Some students are smart."
+        ],
+        correctAnswer: "Not all students are smart.",
+        explanation: "This is a direct translation of the formula, which negates the statement 'All students are smart'. It is logically equivalent to 'There exists at least one student who is not smart' (∃x ¬Smart(x))."
+      },
+      {
+        question: "Which formula represents: 'A student passes a course only if they are not lazy.'?",
+        options: [
+          "∀x ∀y (Pass(x, y) → ¬Lazy(x))",
+          "∀x ∀y (¬Lazy(x) → Pass(x, y))",
+          "∀x ∀y (Pass(x, y) ↔ ¬Lazy(x))",
+          "∃x ∃y (Pass(x, y) ∧ ¬Lazy(x))"
+        ],
+        correctAnswer: "∀x ∀y (Pass(x, y) → ¬Lazy(x))",
+        explanation: "The phrase 'A only if B' translates to the conditional 'A → B'. This must hold for all students and all courses, so universal quantifiers are needed."
+      }
+    ];
+
+    const shuffleArray = (array) => { for (let i = array.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [array[i], array[j]] = [array[j], array[i]]; } return array; };
+
+    // Function to format formula-like text for display
+    const formatText = (text) => {
+      // Handle questions that mix English and a formula in single quotes
+      const parts = text.split("'");
+      if (parts.length === 3 && /[∀∃∧∨¬→↔]/.test(parts[1])) {
+        return `${parts[0]}<code>${parts[1]}</code>`;
+      }
+
+      // Handle options that are purely formulas by checking for logic symbols
+      if (/[∀∃∧∨¬→↔]/.test(text) && text.split(' ').length < 10) {
+        return `<code>${text}</code>`;
+      }
+
+      return text;
+    };
+
+
+    function generateQuiz() {
+      questionsContainer.innerHTML = '';
+      const selectedQuestions = shuffleArray([...questionsPool]).slice(0, 5);
+
+      selectedQuestions.forEach((q, i) => {
+        const shuffledOptions = shuffleArray([...q.options]);
+
+        const optionsHtml = shuffledOptions.map(opt => `
+                <label>
+                    <input type="radio" name="q-${i}" value="${opt}">
+                    ${formatText(opt)}
+                </label>
+            `).join('');
+
+        const questionDiv = document.createElement('div');
+        questionDiv.className = 'question';
+        questionDiv.dataset.answer = q.correctAnswer;
+        questionDiv.innerHTML = `
+                <div class="question-header">
+                    <strong>Question ${i + 1}</strong>
+                    <span class="result-indicator"></span>
+                </div>
+                <div class="question-text">${formatText(q.question)}</div>
+                <div class="radio-group">${optionsHtml}</div>
+                <div class="explanation-text">${q.explanation}</div>
+            `;
+        questionsContainer.appendChild(questionDiv);
+      });
+    }
+
+    function checkAnswers() {
+      document.querySelectorAll('.question').forEach(q => {
+        const correctAnswer = q.dataset.answer;
+        const selectedRadio = q.querySelector('input[type="radio"]:checked');
+        const indicator = q.querySelector('.result-indicator');
+        const explanation = q.querySelector('.explanation-text');
+
+        if (explanation) explanation.style.display = 'block';
+
+        if (selectedRadio && selectedRadio.value === correctAnswer) {
+          indicator.textContent = '✓';
+          indicator.className = 'result-indicator correct';
+        } else {
+          indicator.textContent = '✗';
+          indicator.className = 'result-indicator incorrect';
+
+          const correctRadio = q.querySelector(`input[value="${CSS.escape(correctAnswer)}"]`);
+          if (correctRadio) {
+            correctRadio.parentElement.classList.add('correct-answer-highlight');
+          }
+        }
+      });
+    }
+
+    checkBtn.addEventListener('click', checkAnswers);
+    resetBtn.addEventListener('click', generateQuiz);
+    generateQuiz();
+  });
+</script>
+</body>
+</html>
+
