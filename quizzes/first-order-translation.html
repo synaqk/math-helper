@@ -171,6 +171,106 @@
 
     const questionsPool = [
       {
+        question: "Which formula represents: 'Some students take the Math course'?",
+        options: [
+          "∃x (Take(x, Math))",
+          "∀x (Take(x, Math))",
+          "∃x (¬Take(x, Math))",
+          "∀x (¬Take(x, Math))"
+        ],
+        correctAnswer: "∃x (Take(x, Math))",
+        explanation: "The word 'Some' indicates an existential quantifier (∃), meaning there exists at least one student who takes the Math course."
+      },
+      {
+        question: "Which formula represents: 'Everyone who passes the Math course is smart'?",
+        options: [
+          "∀x (Pass(x, Math) → Smart(x))",
+          "∀x (Pass(x, Math) ∧ Smart(x))",
+          "∃x (Pass(x, Math) ∧ Smart(x))",
+          "∀x (Smart(x) → Pass(x, Math))"
+        ],
+        correctAnswer: "∀x (Pass(x, Math) → Smart(x))",
+        explanation: "'Everyone' indicates a universal quantifier (∀). The structure 'Everyone who A is B' is a conditional, meaning 'For all x, IF x does A, THEN x is B'."
+      },
+      {
+        question: "Which formula represents: 'Every student who takes the Math course passes it'?",
+        options: [
+          "∀x (Take(x, Math) → Pass(x, Math))",
+          "∀x (Take(x, Math) ∧ Pass(x, Math))",
+          "∃x (Take(x, Math) ∧ Pass(x, Math))",
+          "∀x (Pass(x, Math) → Take(x, Math))"
+        ],
+        correctAnswer: "∀x (Take(x, Math) → Pass(x, Math))",
+        explanation: "This statement applies to all students (∀x) and is a conditional: IF a student takes Math, THEN that student passes Math."
+      },
+      {
+        question: "Which formula represents: 'Some students take both the Math course and Programming course'?",
+        options: [
+          "∃x (Take(x, Math) ∧ Take(x, Programming))",
+          "∃x (Take(x, Math) ∨ Take(x, Programming))",
+          "∀x (Take(x, Math) ∧ Take(x, Programming))",
+          "∃x Take(x, Math) ∧ ∃y Take(y, Programming)"
+        ],
+        correctAnswer: "∃x (Take(x, Math) ∧ Take(x, Programming))",
+        explanation: "'Some' points to an existential quantifier (∃). 'Both... and...' indicates a conjunction (∧) applied to the same student x."
+      },
+      {
+        question: "Which formula represents: 'Every student takes either the Math course or Programming course'?",
+        options: [
+          "∀x (Take(x, Math) ∨ Take(x, Programming))",
+          "∀x (Take(x, Math) ∧ Take(x, Programming))",
+          "∃x (Take(x, Math) ∨ Take(x, Programming))",
+          "∀x (Take(x, Math) → Take(x, Programming))"
+        ],
+        correctAnswer: "∀x (Take(x, Math) ∨ Take(x, Programming))",
+        explanation: "'Every student' requires a universal quantifier (∀). 'Either... or...' indicates a disjunction (∨)."
+      },
+      {
+        question: "Which formula represents: 'Only one student takes the Programming course'?",
+        options: [
+          "∀x ∃y (¬Take(x, Programming) ∧ Take(y, Programming)))",
+          "∃x (Take(x, Programming))",
+          "∀x (Take(x, Programming))",
+          "∃!x (Take(x, Programming))"
+        ],
+        correctAnswer: "∃!x (Take(x, Programming))",
+        explanation: "The unique existential quantifier '∃!' is used to state that there is 'one and only one' or 'exactly one' element with a certain property. " +
+                "A longer, equivalent form is ∃x (Take(x, Programming) ∧ ∀y (Take(y, Programming) → y = x))"
+      },
+      {
+        question: "Which formula represents: 'There are no students that don't take math'?",
+        options: [
+          "∀x (Take(x, Math))",
+          "¬∃x (Take(x, Math))",
+          "∃x (¬Take(x, Math))",
+          "∀x (¬Take(x, Math))"
+        ],
+        correctAnswer: "∀x (Take(x, Math))",
+        explanation: "Saying 'there are no students that don't' is a double negative. It's logically equivalent to saying 'All students take math'."
+      },
+      {
+        question: "Which formula represents: 'All smart students take the Math course'?",
+        options: [
+          "∀x (Smart(x) → Take(x, Math))",
+          "∀x (Smart(x) ∧ Take(x, Math))",
+          "∃x (Smart(x) ∧ Take(x, Math))",
+          "∀x (Take(x, Math) → Smart(x))"
+        ],
+        correctAnswer: "∀x (Smart(x) → Take(x, Math))",
+        explanation: "This applies to all students (∀x) within the subgroup of 'smart' students. This is a conditional: IF a student is smart, THEN they take Math."
+      },
+      {
+        question: "Which formula represents: 'All lazy students do not take the Math course'?",
+        options: [
+          "∀x (Lazy(x) → ¬Take(x, Math))",
+          "∀x (Lazy(x) ∧ ¬Take(x, Math))",
+          "∃x (Lazy(x) ∧ ¬Take(x, Math))",
+          "∀x (¬Take(x, Math) → Lazy(x))"
+        ],
+        correctAnswer: "∀x (Lazy(x) → ¬Take(x, Math))",
+        explanation: "This is a conditional statement applying to all students: IF a student is lazy, THEN they do not take the Math course."
+      },
+      {
         question: "Which formula represents: 'All students take the courses Programming and Math.'?",
         options: [
           "∀x (Take(x, Programming) ∧ Take(x, Math))",
